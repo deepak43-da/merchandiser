@@ -53,42 +53,85 @@
 // export default store; // Keep default export for backward compatibility
 
 
+// import { createStore, applyMiddleware } from "redux";
+// import { persistStore, persistReducer } from "redux-persist";
+// import localForage from "localforage"; // ✅ IndexedDB
+// import createSagaMiddleware from "redux-saga";
+// import rootReducer from "./reducers/rootReducer";
+// import rootSaga from "./sagas/rootSaga";
+
+// const sagaMiddleware = createSagaMiddleware();
+
+// // 🔹 Optional: configure IndexedDB instance
+// localForage.config({
+//   name: "myAppDB",          // IndexedDB database name
+//   storeName: "reduxState",  // Object store name
+//   description: "Persisted Redux State"
+// });
+
+// // 🔹 Persist configuration
+// const persistConfig = {
+//   key: "root",
+//   storage: localForage,          // ✅ IndexedDB instead of localStorage
+//   whitelist: ["capturedImages"], // persist only what you need
+// };
+
+// // 🔹 Create persisted reducer
+// const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// // 🔹 Create store
+// const store = createStore(
+//   persistedReducer,
+//   applyMiddleware(sagaMiddleware)
+// );
+
+// // 🔹 Create persistor
+// export const persistor = persistStore(store);
+
+// // 🔹 Run sagas
+// sagaMiddleware.run(rootSaga);
+
+// export default store;
+
+
 import { createStore, applyMiddleware } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
-import localForage from "localforage"; // ✅ IndexedDB
+import localForage from "localforage";
 import createSagaMiddleware from "redux-saga";
 import rootReducer from "./reducers/rootReducer";
 import rootSaga from "./sagas/rootSaga";
 
 const sagaMiddleware = createSagaMiddleware();
 
-// 🔹 Optional: configure IndexedDB instance
+// Configure IndexedDB
 localForage.config({
-  name: "myAppDB",          // IndexedDB database name
-  storeName: "reduxState",  // Object store name
-  description: "Persisted Redux State"
+  name: "myAppDB",
+  storeName: "reduxState",
+  description: "Persisted Redux State",
+  version: 1.0,
+  size: 4980736, // 5MB
 });
 
-// 🔹 Persist configuration
+// Persist configuration with user-based key
 const persistConfig = {
   key: "root",
-  storage: localForage,          // ✅ IndexedDB instead of localStorage
-  whitelist: ["capturedImages"], // persist only what you need
+  storage: localForage,
+  whitelist: ["capturedImages"],
 };
 
-// 🔹 Create persisted reducer
+// Create persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// 🔹 Create store
+// Create store
 const store = createStore(
   persistedReducer,
   applyMiddleware(sagaMiddleware)
 );
 
-// 🔹 Create persistor
+// Create persistor
 export const persistor = persistStore(store);
 
-// 🔹 Run sagas
+// Run sagas
 sagaMiddleware.run(rootSaga);
 
 export default store;

@@ -17,7 +17,62 @@
 // }
 
 
+// const CACHE_NAME = "pwa-cache-v1";
+
+// const APP_SHELL = [
+//   "/",
+//   "/index.html",
+//   "/manifest.json"
+// ];
+
+// // 🔹 INSTALL
+// self.addEventListener("install", (event) => {
+//   event.waitUntil(
+//     caches.open(CACHE_NAME).then((cache) => {
+//       return cache.addAll(APP_SHELL);
+//     })
+//   );
+//   self.skipWaiting();
+// });
+
+// // 🔹 ACTIVATE
+// self.addEventListener("activate", (event) => {
+//   event.waitUntil(
+//     caches.keys().then((keys) =>
+//       Promise.all(
+//         keys
+//           .filter((key) => key !== CACHE_NAME)
+//           .map((key) => caches.delete(key))
+//       )
+//     )
+//   );
+//   self.clients.claim();
+// });
+
+// // 🔹 FETCH (THIS IS THE IMPORTANT PART)
+// self.addEventListener("fetch", (event) => {
+
+//   // ✅ SPA navigation → always return index.html
+//   if (event.request.mode === "navigate") {
+//     event.respondWith(
+//       caches.match("/index.html").then((cached) => {
+//         return cached || fetch(event.request);
+//       })
+//     );
+//     return;
+//   }
+
+//   // ✅ Static assets
+//   event.respondWith(
+//     caches.match(event.request).then((cached) => {
+//       return cached || fetch(event.request);
+//     })
+//   );
+// });
+
+
 const CACHE_NAME = "pwa-cache-v1";
+const CLEANUP_KEY = 'last_data_cleanup_timestamp';
 
 const APP_SHELL = [
   "/",
@@ -25,7 +80,7 @@ const APP_SHELL = [
   "/manifest.json"
 ];
 
-// 🔹 INSTALL
+// Install
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -35,24 +90,52 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-// 🔹 ACTIVATE
+// Activate with cleanup
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
+    Promise.all([
+      // Clean old caches
+      caches.keys().then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+        )
+      ),
+      // Check for 24-hour cleanup
+      (async () => {
+        const lastCleanup = localStorage.getItem(CLEANUP_KEY);
+        const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+        const now = new Date();
+
+        if (!lastCleanup || (now - new Date(lastCleanup)) > twentyFourHoursInMs) {
+          // Clear IndexedDB (Redux store)
+          if (window.indexedDB) {
+            const databases = await window.indexedDB.databases();
+            for (const db of databases) {
+              if (db.name) {
+                window.indexedDB.deleteDatabase(db.name);
+              }
+            }
+          }
+          
+          // Clear localStorage items
+          localStorage.removeItem('auth');
+          localStorage.removeItem('id');
+          localStorage.removeItem('maindata');
+          
+          // Update cleanup timestamp
+          localStorage.setItem(CLEANUP_KEY, now.toISOString());
+        }
+      })()
+    ])
   );
   self.clients.claim();
 });
 
-// 🔹 FETCH (THIS IS THE IMPORTANT PART)
+// Fetch
 self.addEventListener("fetch", (event) => {
-
-  // ✅ SPA navigation → always return index.html
+  // SPA navigation
   if (event.request.mode === "navigate") {
     event.respondWith(
       caches.match("/index.html").then((cached) => {
@@ -62,7 +145,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // ✅ Static assets
+  // Static assets
   event.respondWith(
     caches.match(event.request).then((cached) => {
       return cached || fetch(event.request);

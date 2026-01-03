@@ -40,39 +40,54 @@ const maindata = JSON.parse(localStorage.getItem("maindata")) || [];
     }
   };
 
-const handleLogout = () => {
-  // 1. Dispatch logout action
-  // dispatch({ type: "LOGOUT" });
-  
-  // 2. Clear localStorage completely
-  localStorage.clear();
-  
-  // 3. Clear sessionStorage
-  sessionStorage.clear();
-  
-  // 4. Clear IndexedDB if used
-  if (window.indexedDB) {
-    window.indexedDB.databases().then((databases) => {
-      databases.forEach((db) => {
-        if (db.name) {
-          window.indexedDB.deleteDatabase(db.name);
-        }
-      });
-    });
-  }
-localStorage.setItem("maindata", [])
+  // ... (previous imports and code remain the same until handleLogout) ...
 
-  // 5. Clear all cookies
-  document.cookie.split(";").forEach((c) => {
-    document.cookie = c
-      .replace(/^ +/, "")
-      .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-  });
+const handleLogout = () => {
+  // Only clear session data, NOT the captured images
+  localStorage.removeItem('auth');
+  localStorage.removeItem('id');
+  // Note: We keep 'maindata' to avoid unnecessary API calls
+  // localStorage.removeItem('maindata');
   
-  // 6. Force a full page reload with cache clear
+  // Navigate to login
   navigate("/");
-  window.location.reload();
 };
+
+// ... (rest of the component remains the same) ...
+
+// const handleLogout = () => {
+//   // 1. Dispatch logout action
+//   // dispatch({ type: "LOGOUT" });
+  
+//   // 2. Clear localStorage completely
+//   localStorage.clear();
+  
+//   // 3. Clear sessionStorage
+//   sessionStorage.clear();
+  
+//   // 4. Clear IndexedDB if used
+//   if (window.indexedDB) {
+//     window.indexedDB.databases().then((databases) => {
+//       databases.forEach((db) => {
+//         if (db.name) {
+//           window.indexedDB.deleteDatabase(db.name);
+//         }
+//       });
+//     });
+//   }
+// localStorage.setItem("maindata", [])
+
+//   // 5. Clear all cookies
+//   document.cookie.split(";").forEach((c) => {
+//     document.cookie = c
+//       .replace(/^ +/, "")
+//       .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+//   });
+  
+//   // 6. Force a full page reload with cache clear
+//   navigate("/");
+//   window.location.reload();
+// };
 
   // In TaskList.js
 
@@ -185,12 +200,12 @@ localStorage.setItem("maindata", [])
             style={{marginBottom:"20px"}}
               key={t.ActivityID}
             //   onClick={() => 
-            //     {active && navigate(`/task/${t.ActivityID}/${t.StoreID}/${t.ID}`)}}
+            //     {active && navigate(`/task/${t.ActivityID}/${t.StoreID}/${t.ID}/${t.Supplier}/${t.Activity}`)}}
             //   className={`task-card ${active ? "active" : "inactive"}`}
             // >
                onClick={() => 
-                navigate(`/task/${t.ActivityID}/${t.StoreID}/${t.ID}/${t.Supplier}/${t.Activity}`)}
-            >
+                 navigate(`/task/${t.ActivityID}/${t.StoreID}/${t.ID}/${t.Supplier}/${t.Activity}`)}
+             >
               <div className="task-row">
                 <span className="task-title">{t.Supplier} - {t.Activity}</span>
                 <span className={`status-pill ${active ? "active" : "inactive"}`}>

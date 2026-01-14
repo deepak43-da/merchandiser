@@ -98,25 +98,12 @@ self.addEventListener("activate", (event) => {
               .map((key) => caches.delete(key))
           )
         ),
-      // Check for daily cleanup at 00:00:01
+      // Check for cleanup every 5 minutes
       (async () => {
         const lastCleanup = localStorage.getItem(CLEANUP_KEY);
         const now = new Date();
-        // Get today's date at 00:00:01
-        const todayMidnight = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          0,
-          0,
-          1,
-          0
-        );
-        // If lastCleanup is missing or before todayMidnight and now is after todayMidnight, cleanup
-        if (
-          !lastCleanup ||
-          (new Date(lastCleanup) < todayMidnight && now >= todayMidnight)
-        ) {
+        const fiveMinutesInMs = 5 * 60 * 1000;
+        if (!lastCleanup || now - new Date(lastCleanup) > fiveMinutesInMs) {
           // Clear IndexedDB (Redux store)
           if (window.indexedDB) {
             const databases = await window.indexedDB.databases();

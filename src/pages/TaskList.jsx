@@ -164,6 +164,15 @@ export default function TaskList() {
     return false;
   };
 
+const auth = localStorage.getItem("auth");
+
+useEffect(() => {
+    if (auth !== "true") {
+       localStorage.removeItem("auth");
+    localStorage.removeItem("id");
+      navigate("/");
+    }},[auth])
+
   const skeletonCount = 5;
 
   return (
@@ -210,7 +219,7 @@ export default function TaskList() {
                   }}
                   key={t.ActivityID}
                   onClick={() => {
-                    if (!active) {
+                    if (active) {
                       const url = `/task/${encodeURIComponent(
                         t.ActivityID
                       )}/${encodeURIComponent(t.StoreID)}/${encodeURIComponent(
@@ -223,7 +232,7 @@ export default function TaskList() {
                       navigate(url);
                     }
                   }}
-                  // className={`task-card ${active ? "active" : "inactive"}`}
+                  className={`task-card ${active ? "active" : "inactive"}`}
                 >
                   <div className="task-row">
                     <span className="task-title">

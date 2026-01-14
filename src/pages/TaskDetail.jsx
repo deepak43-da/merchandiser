@@ -1040,6 +1040,16 @@ export default function TaskDetail() {
     }
   };
 
+
+  const auth = localStorage.getItem("auth");
+  
+  useEffect(() => {
+      if (auth !== "true") {
+         localStorage.removeItem("auth");
+      localStorage.removeItem("id");
+        navigate("/");
+      }},[auth])
+
   const captureImage = async () => {
     const counts = getTotalImagesCount();
 

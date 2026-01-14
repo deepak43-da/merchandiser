@@ -1,49 +1,6 @@
-
-
-
-// import { useState, useEffect, useRef } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useParams, useNavigate } from "react-router-dom";
-// import { useNetworkStatus } from "../components/useNetworkStatus";
-// import axios from "axios";
-
-// export default function TaskDetail() {
-//   const { ActivityID, StoreID, ScheduleID ,Supplier ,Activity } = useParams();
-//   const navigate = useNavigate();
-//   const [activeTab, setActiveTab] = useState("during");
-//   const [isCameraOpen, setIsCameraOpen] = useState(true);
-//   const [isCompressing, setIsCompressing] = useState(false);
-//   const [isUploading, setIsUploading] = useState(false);
-//   const [hasCameraPermission, setHasCameraPermission] = useState(true);
-//   const [uploadProgress, setUploadProgress] = useState({});
-
-//   const videoRef = useRef(null);
-//   const canvasRef = useRef(null);
-//   const streamRef = useRef(null);
-
-//   const dispatch = useDispatch();
-//   const { isOnline } = useNetworkStatus();
-
-//   // Get offline images from Redux
-//   const capturedImages = useSelector(state => state.capturedImages.tasks[ActivityID] || {
-//     duringActivity: [],
-//     postActivity: []
-//   });
-
-//   const currentImages = activeTab === "during" 
-//     ? capturedImages.duringActivity 
-//     : capturedImages.postActivity;
-
-//   const DURING_LIMIT = 5;
-//   const POST_LIMIT = 20;
-//   const currentLimit = activeTab === "during" ? DURING_LIMIT : POST_LIMIT;
-  
-//   // Check if limit is reached for current tab
-//   const isLimitReached = currentImages.length >= currentLimit;
-
 //   useEffect(() => {
 //     dispatch({ type: "SET_CURRENT_TASK", payload: ActivityID });
-    
+
 //     if (isCameraOpen) {
 //       startCamera();
 //     } else {
@@ -57,12 +14,12 @@
 
 //   const startCamera = async () => {
 //     try {
-//       const stream = await navigator.mediaDevices.getUserMedia({ 
-//         video: { 
+//       const stream = await navigator.mediaDevices.getUserMedia({
+//         video: {
 //           facingMode: "environment",
 //           width: { ideal: 1280 },
 //           height: { ideal: 720 }
-//         } 
+//         }
 //       });
 
 //       streamRef.current = stream;
@@ -110,7 +67,7 @@
 //     try {
 //       const blob = base64ToBlob(imageData);
 //       const file = new File([blob], `image_${Date.now()}.jpg`, { type: 'image/jpeg' });
-      
+
 //       const formData = new FormData();
 //       formData.append('ScheduleID', ScheduleID);
 //       formData.append('StoreID', StoreID);
@@ -157,12 +114,12 @@
 //   const captureImage = async () => {
 //     // Check if limit is reached for this task and tab
 //     const counts = getTotalImagesCount();
-    
+
 //     if (activeTab === "during" && counts.during >= DURING_LIMIT) {
 //       alert(`Maximum ${DURING_LIMIT} images allowed for During Activity in this task`);
 //       return;
 //     }
-    
+
 //     if (activeTab === "post" && counts.post >= POST_LIMIT) {
 //       alert(`Maximum ${POST_LIMIT} images allowed for Post Activity in this task`);
 //       return;
@@ -189,17 +146,17 @@
 
 //       const imageData = canvas.toDataURL("image/jpeg", 0.7);
 //       const imageId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      
+
 //       setIsCompressing(true);
-      
+
 //       const stage = activeTab === "during" ? "Before" : "After";
-      
+
 //       if (isOnline) {
 //         // Online: Upload immediately
 //         setIsUploading(true);
 //         try {
 //           await uploadImageToAPI(imageData, stage, imageId);
-          
+
 //           // After successful upload, mark it in Redux (optional, for tracking)
 //           dispatch({
 //             type: "ADD_UPLOADED_IMAGE",
@@ -215,7 +172,7 @@
 //               uploaded: true
 //             }
 //           });
-          
+
 //           // alert("Image uploaded successfully!");
 //         } catch (uploadError) {
 //           console.error("Upload failed:", uploadError);
@@ -230,7 +187,7 @@
 //         storeImageOffline(imageData, stage);
 //         // alert("You are offline. Image saved locally and will sync when back online.");
 //       }
-      
+
 //     } catch (error) {
 //       console.error("Error capturing image:", error);
 //       alert("Failed to capture image. Please try again.");
@@ -241,7 +198,7 @@
 
 //   const storeImageOffline = (imageData, stage) => {
 //     const timestamp = new Date().toISOString();
-    
+
 //     dispatch({
 //       type: "CAPTURE_IMAGE",
 //       payload: {
@@ -264,7 +221,7 @@
 //       alert("No images to clear.");
 //       return;
 //     }
-    
+
 //     if (window.confirm(`Are you sure you want to clear all ${counts.total} images for this task?`)) {
 //       dispatch({ type: "CLEAR_TASK_IMAGES", payload: ActivityID });
 //       alert("All images cleared.");
@@ -273,7 +230,6 @@
 
 //   // Remove a specific offline image
 //   const removeOfflineImage = (index) => {
-
 
 //  dispatch({
 //         type: "REMOVE_IMAGE",
@@ -301,7 +257,7 @@
 //       <div style={styles.errorContainer}>
 //         <h2>Task Not Found</h2>
 //         <p>No task ID provided. Please go back to the task list.</p>
-//         <button 
+//         <button
 //           style={styles.backButton}
 //           onClick={() => navigate("/tasks")}
 //         >
@@ -317,11 +273,11 @@
 //     <div style={styles.container}>
 //       {/* Header */}
 //       <div style={styles.header}>
-//         <button 
+//         <button
 //           style={styles.backButton}
 //           onClick={() => navigate(-1)}
 //         >
-//           ← 
+//           ←
 //         </button>
 //         <h1 style={styles.mainTitle}>{Supplier} - {Activity}</h1>
 //       </div>
@@ -355,7 +311,7 @@
 //         <div style={styles.sectionHeader}>
 //           <h2 style={styles.sectionTitle}>Capture Evidence</h2>
 //           {/* {counts.total > 0 && (
-//             <button 
+//             <button
 //               style={styles.clearAllButton}
 //               onClick={handleClearAll}
 //             >
@@ -363,7 +319,7 @@
 //             </button>
 //           )} */}
 //         </div>
-        
+
 //         {/* Image Limits Display */}
 //         <div style={styles.limitsContainer}>
 //           <div style={styles.limitItem}>
@@ -389,7 +345,7 @@
 //               playsInline
 //               style={{
 //                 width: "100%",
-//                 height: "100%", 
+//                 height: "100%",
 //                 objectFit: "cover",
 //                 transform: "scaleX(-1)",
 //                 WebkitTransform: "scaleX(-1)"
@@ -462,8 +418,8 @@
 //             <div style={styles.offlineImagesGrid}>
 //               {currentImages.map((image, index) => (
 //                 <div key={index} style={styles.offlineImageWrapper}>
-//                   <img 
-//                     src={image.data} 
+//                   <img
+//                     src={image.data}
 //                     alt={`Offline ${index + 1}`}
 //                     style={styles.offlineImage}
 //                   />
@@ -479,7 +435,7 @@
 //                     )}
 //                   </div>
 //                   {!image.uploaded && (
-//                     <button 
+//                     <button
 //                       style={styles.removeImageButton}
 //                       onClick={() => removeOfflineImage(index)}
 //                       title="Remove image"
@@ -507,7 +463,7 @@
 //             Total: {counts.total}/25
 //           </div>
 //         </div>
-        
+
 //         {!isOnline && (
 //           <div style={styles.offlineNotice}>
 //             <small>Network: Offline • Images will sync automatically when back online</small>
@@ -910,7 +866,6 @@
 //   }
 // `;
 
-
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
@@ -918,7 +873,16 @@ import { useNetworkStatus } from "../components/useNetworkStatus";
 import axios from "axios";
 
 export default function TaskDetail() {
-  const { ActivityID, StoreID, ScheduleID, Supplier, Activity } = useParams();
+  const {
+    ActivityID,
+    StoreID,
+    ScheduleID,
+    Supplier,
+    Activity,
+    Duration,
+    DOWork,
+  } = useParams();
+  console.log(DOWork, "DOWork");
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("during");
   const [isCameraOpen, setIsCameraOpen] = useState(true);
@@ -926,6 +890,7 @@ export default function TaskDetail() {
   const [isUploading, setIsUploading] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(true);
   const [uploadProgress, setUploadProgress] = useState({});
+  const [cameraType, setCameraType] = useState("environment"); // "environment" (back) or "user" (front)
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -934,32 +899,33 @@ export default function TaskDetail() {
   const dispatch = useDispatch();
   const { isOnline } = useNetworkStatus();
 
-  // Get images for current user and task
-  const capturedImages = useSelector(state => {
+  // Get images for current user and task, using ScheduleID as the unique task key
+  const capturedImages = useSelector((state) => {
     const userTasks = state.capturedImages.userTasks[StoreID] || {};
-    return userTasks[ActivityID] || { duringActivity: [], postActivity: [] };
+    return userTasks[ScheduleID] || { duringActivity: [], postActivity: [] };
   });
 
-  const currentImages = activeTab === "during" 
-    ? capturedImages.duringActivity 
-    : capturedImages.postActivity;
+  const currentImages =
+    activeTab === "during"
+      ? capturedImages.duringActivity
+      : capturedImages.postActivity;
 
   const DURING_LIMIT = 5;
   const POST_LIMIT = 20;
   const currentLimit = activeTab === "during" ? DURING_LIMIT : POST_LIMIT;
-  
+
   const isLimitReached = currentImages.length >= currentLimit;
 
   useEffect(() => {
     // Set current user and task in Redux
-    dispatch({ 
-      type: "SET_CURRENT_USER_AND_TASK", 
-      payload: { 
-        userId: StoreID, 
-        taskId: ActivityID 
-      } 
+    dispatch({
+      type: "SET_CURRENT_USER_AND_TASK",
+      payload: {
+        userId: StoreID,
+        taskId: ActivityID,
+      },
     });
-    
+
     if (isCameraOpen) {
       startCamera();
     } else {
@@ -973,12 +939,12 @@ export default function TaskDetail() {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: "environment",
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: cameraType,
           width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
+          height: { ideal: 720 },
+        },
       });
 
       streamRef.current = stream;
@@ -996,7 +962,7 @@ export default function TaskDetail() {
 
   const stopCamera = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
   };
@@ -1005,52 +971,59 @@ export default function TaskDetail() {
     return {
       during: capturedImages.duringActivity.length,
       post: capturedImages.postActivity.length,
-      total: capturedImages.duringActivity.length + capturedImages.postActivity.length
+      total:
+        capturedImages.duringActivity.length +
+        capturedImages.postActivity.length,
     };
   };
 
   const base64ToBlob = (base64) => {
-    const byteCharacters = atob(base64.split(',')[1]);
+    const byteCharacters = atob(base64.split(",")[1]);
     const byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
     const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: 'image/jpeg' });
+    return new Blob([byteArray], { type: "image/jpeg" });
   };
 
   const uploadImageToAPI = async (imageData, stage, imageId) => {
     try {
       const blob = base64ToBlob(imageData);
-      const file = new File([blob], `image_${Date.now()}.jpg`, { type: 'image/jpeg' });
-      
+      const file = new File([blob], `image_${Date.now()}.jpg`, {
+        type: "image/jpeg",
+      });
+
       const formData = new FormData();
-      formData.append('ScheduleID', ScheduleID);
-      formData.append('StoreID', StoreID);
-      formData.append('ActivityID', ActivityID);
-      formData.append('Stage', stage);
-      formData.append('DTOImage', new Date().toISOString().replace('T', ' ').substring(0, 19));
-      formData.append('UserID', '1');
-      formData.append('Image', file);
+      formData.append("ScheduleID", ScheduleID);
+      formData.append("StoreID", StoreID);
+      formData.append("ActivityID", ActivityID);
+      formData.append("Stage", stage);
+      // Pass DOWork as DTOImage if available
+      formData.append("DOWork", DOWork);
+      formData.append("UserID", "1");
+      formData.append("Image", file);
 
       const response = await axios.post(
         "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/QCImageUpload",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
           onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(prev => ({
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadProgress((prev) => ({
               ...prev,
-              [imageId]: percentCompleted
+              [imageId]: percentCompleted,
             }));
-          }
+          },
         }
       );
 
-      setUploadProgress(prev => {
+      setUploadProgress((prev) => {
         const newProgress = { ...prev };
         delete newProgress[imageId];
         return newProgress;
@@ -1058,7 +1031,7 @@ export default function TaskDetail() {
 
       return response.data;
     } catch (error) {
-      setUploadProgress(prev => {
+      setUploadProgress((prev) => {
         const newProgress = { ...prev };
         delete newProgress[imageId];
         return newProgress;
@@ -1069,14 +1042,18 @@ export default function TaskDetail() {
 
   const captureImage = async () => {
     const counts = getTotalImagesCount();
-    
+
     if (activeTab === "during" && counts.during >= DURING_LIMIT) {
-      alert(`Maximum ${DURING_LIMIT} images allowed for During Activity in this task`);
+      alert(
+        `Maximum ${DURING_LIMIT} images allowed for During Activity in this task`
+      );
       return;
     }
-    
+
     if (activeTab === "post" && counts.post >= POST_LIMIT) {
-      alert(`Maximum ${POST_LIMIT} images allowed for Post Activity in this task`);
+      alert(
+        `Maximum ${POST_LIMIT} images allowed for Post Activity in this task`
+      );
       return;
     }
 
@@ -1101,21 +1078,21 @@ export default function TaskDetail() {
 
       const imageData = canvas.toDataURL("image/jpeg", 0.7);
       const imageId = `${StoreID}-${ActivityID}-${activeTab}-${Date.now()}`;
-      
+
       setIsCompressing(true);
-      
+
       const stage = activeTab === "during" ? "Before" : "After";
-      
+
       if (isOnline) {
         setIsUploading(true);
         try {
           await uploadImageToAPI(imageData, stage, imageId);
-          
+
           dispatch({
             type: "ADD_UPLOADED_IMAGE",
             payload: {
               userId: StoreID,
-              taskId: ActivityID,
+              taskId: ScheduleID, // Use ScheduleID for unique task
               imageData: imageData,
               tab: activeTab,
               timestamp: new Date().toISOString(),
@@ -1123,9 +1100,9 @@ export default function TaskDetail() {
               scheduleId: ScheduleID,
               storeId: StoreID,
               activityId: ActivityID,
-            }
+              DOWork: DOWork,
+            },
           });
-          
         } catch (uploadError) {
           console.error("Upload failed:", uploadError);
           storeImageOffline(imageData, stage);
@@ -1137,7 +1114,6 @@ export default function TaskDetail() {
         storeImageOffline(imageData, stage);
         // alert("You are offline. Image saved locally and will sync when back online.");
       }
-      
     } catch (error) {
       console.error("Error capturing image:", error);
       alert("Failed to capture image. Please try again.");
@@ -1148,12 +1124,12 @@ export default function TaskDetail() {
 
   const storeImageOffline = (imageData, stage) => {
     const timestamp = new Date().toISOString();
-    
+
     dispatch({
       type: "CAPTURE_IMAGE",
       payload: {
         userId: StoreID,
-        taskId: ActivityID,
+        taskId: ScheduleID, // Use ScheduleID for unique task
         imageData: imageData,
         tab: activeTab,
         timestamp: timestamp,
@@ -1161,7 +1137,8 @@ export default function TaskDetail() {
         scheduleId: ScheduleID,
         storeId: StoreID,
         activityId: ActivityID,
-      }
+        DOWork: DOWork,
+      },
     });
   };
 
@@ -1171,14 +1148,18 @@ export default function TaskDetail() {
       alert("No images to clear.");
       return;
     }
-    
-    if (window.confirm(`Are you sure you want to clear all ${counts.total} images for this task?`)) {
-      dispatch({ 
-        type: "CLEAR_USER_TASK_IMAGES", 
-        payload: { 
-          userId: StoreID, 
-          taskId: ActivityID 
-        } 
+
+    if (
+      window.confirm(
+        `Are you sure you want to clear all ${counts.total} images for this task?`
+      )
+    ) {
+      dispatch({
+        type: "CLEAR_USER_TASK_IMAGES",
+        payload: {
+          userId: StoreID,
+          taskId: ScheduleID, // Use ScheduleID for unique task
+        },
       });
       alert("All images cleared.");
     }
@@ -1189,10 +1170,10 @@ export default function TaskDetail() {
       type: "REMOVE_IMAGE",
       payload: {
         userId: StoreID,
-        taskId: ActivityID,
+        taskId: ScheduleID, // Use ScheduleID for unique task
         tab: activeTab,
-        index: index
-      }
+        index: index,
+      },
     });
   };
 
@@ -1201,31 +1182,26 @@ export default function TaskDetail() {
       <div style={styles.errorContainer}>
         <h2>Task Not Found</h2>
         <p>No task ID provided. Please go back to the task list.</p>
-        <button 
-          style={styles.backButton}
-          onClick={() => navigate("/tasks")}
-        >
+        <button style={styles.backButton} onClick={() => navigate("/tasks")}>
           Back to Tasks
         </button>
       </div>
     );
   }
-
   const counts = getTotalImagesCount();
 
   return (
     <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
-        <button 
-          style={styles.backButton}
-          onClick={() => navigate(-1)}
-        >
-          ← 
+        <button style={styles.backButton} onClick={() => navigate(-1)}>
+          ←
         </button>
-        <h1 style={styles.mainTitle}>{Supplier} - {Activity}</h1>
+        <h1 style={styles.mainTitle}>
+          {Supplier} - {Activity}
+        </h1>
       </div>
-
+      <div style={styles.timeSection}>Hrs Book : {Duration} hrs </div>
       {/* Tabs */}
       <div style={styles.tabContainer}>
         <button
@@ -1249,27 +1225,44 @@ export default function TaskDetail() {
       </div>
 
       {/* Evidence Section */}
-      <div style={ activeTab === "during" ? styles.evidenceSection  : styles.evidenceSections}>
+      <div
+        style={
+          activeTab === "during"
+            ? styles.evidenceSection
+            : styles.evidenceSections
+        }
+      >
         <div style={styles.sectionHeader}>
           <h2 style={styles.sectionTitle}>Capture Evidence</h2>
         </div>
-        
         {/* Image Limits Display */}
         <div style={styles.limitsContainer}>
           <div style={styles.limitItem}>
             <span style={styles.limitLabel}>During Activity:</span>
-            <span style={counts.during >= DURING_LIMIT ? styles.limitReached : styles.limitCount}>
-              {counts.during}/{DURING_LIMIT} {counts.during >= DURING_LIMIT && "✓"}
+            <span
+              style={
+                counts.during >= DURING_LIMIT
+                  ? styles.limitReached
+                  : styles.limitCount
+              }
+            >
+              {counts.during}/{DURING_LIMIT}{" "}
+              {counts.during >= DURING_LIMIT && "✓"}
             </span>
           </div>
           <div style={styles.limitItem}>
             <span style={styles.limitLabel}>Post Activity:</span>
-            <span style={counts.post >= POST_LIMIT ? styles.limitReached : styles.limitCount}>
+            <span
+              style={
+                counts.post >= POST_LIMIT
+                  ? styles.limitReached
+                  : styles.limitCount
+              }
+            >
               {counts.post}/{POST_LIMIT} {counts.post >= POST_LIMIT && "✓"}
             </span>
           </div>
         </div>
-
         {/* Camera Preview */}
         <div style={styles.imagePreview}>
           {isCameraOpen ? (
@@ -1279,10 +1272,10 @@ export default function TaskDetail() {
               playsInline
               style={{
                 width: "100%",
-                height: "100%", 
+                height: "100%",
                 objectFit: "cover",
-                transform: "scaleX(-1)",
-                WebkitTransform: "scaleX(-1)"
+                transform: cameraType === "user" ? "scaleX(-1)" : "none",
+                WebkitTransform: cameraType === "user" ? "scaleX(-1)" : "none",
               }}
             />
           ) : (
@@ -1292,26 +1285,28 @@ export default function TaskDetail() {
             </div>
           )}
         </div>
-
+        {/* Camera toggle button removed */}
         {/* Status Indicators */}
         <div style={styles.statusContainer}>
           {!isOnline && (
             <div style={styles.offlineIndicator}>
-              ⚠️ You are offline. Images will sync automatically when back online.
+              ⚠️ You are offline. Images will sync automatically when back
+              online.
             </div>
           )}
           {isUploading && (
             <div style={styles.uploadingIndicator}>
-              ⬆️ Uploading image... {uploadProgress && Object.values(uploadProgress)[0]}%
+              ⬆️ Uploading image...{" "}
+              {uploadProgress && Object.values(uploadProgress)[0]}%
             </div>
           )}
           {isLimitReached && (
             <div style={styles.limitIndicator}>
-              ⛔ Limit reached for {activeTab} activity. Cannot capture more images.
+              ⛔ Limit reached for {activeTab} activity. Cannot capture more
+              images.
             </div>
           )}
         </div>
-
         {/* Compressing indicator */}
         {isCompressing && (
           <div style={styles.compressingOverlay}>
@@ -1319,14 +1314,13 @@ export default function TaskDetail() {
             <div style={styles.compressingText}>Processing image...</div>
           </div>
         )}
-
         {/* Capture Button */}
         {isCameraOpen && (
           <button
             style={{
               ...styles.captureButton,
-              backgroundColor: isLimitReached ? '#9ca3af' : '#10b981',
-              opacity: (isCompressing || isUploading || isLimitReached) ? 0.7 : 1
+              backgroundColor: isLimitReached ? "#9ca3af" : "#10b981",
+              opacity: isCompressing || isUploading || isLimitReached ? 0.7 : 1,
             }}
             onClick={captureImage}
             disabled={isLimitReached || isCompressing || isUploading}
@@ -1334,22 +1328,24 @@ export default function TaskDetail() {
             {isLimitReached
               ? `Limit Reached (${currentImages.length}/${currentLimit})`
               : isCompressing
-                ? '⏳ Processing...'
-                : isUploading
-                  ? '⬆️ Uploading...'
-                  : ` ${activeTab === "during" ? "During Activity Image" : "Post Activity Image"} (${currentImages.length}/${currentLimit})`
-            }
+              ? "⏳ Processing..."
+              : isUploading
+              ? "⬆️ Uploading..."
+              : ` ${
+                  activeTab === "during"
+                    ? "During Activity Image"
+                    : "Post Activity Image"
+                } (${currentImages.length}/${currentLimit})`}
           </button>
         )}
-
         {/* Offline Images List */}
         {currentImages.length > 0 && (
           <div style={styles.offlineImagesContainer}>
             <div style={styles.offlineImagesGrid}>
               {currentImages.map((image, index) => (
                 <div key={index} style={styles.offlineImageWrapper}>
-                  <img 
-                    src={image.data} 
+                  <img
+                    src={image.data}
                     alt={`${activeTab} ${index + 1}`}
                     style={styles.offlineImage}
                   />
@@ -1358,14 +1354,21 @@ export default function TaskDetail() {
                     {image.uploaded && (
                       <span style={styles.uploadedBadge}>✓</span>
                     )}
-                    {uploadProgress[`${StoreID}-${ActivityID}-${activeTab}-${index}`] && (
+                    {uploadProgress[
+                      `${StoreID}-${ActivityID}-${activeTab}-${index}`
+                    ] && (
                       <div style={styles.uploadProgress}>
-                        {uploadProgress[`${StoreID}-${ActivityID}-${activeTab}-${index}`]}%
+                        {
+                          uploadProgress[
+                            `${StoreID}-${ActivityID}-${activeTab}-${index}`
+                          ]
+                        }
+                        %
                       </div>
                     )}
                   </div>
                   {!image.uploaded && (
-                    <button 
+                    <button
                       style={styles.removeImageButton}
                       onClick={() => removeOfflineImage(index)}
                       title="Remove image"
@@ -1389,14 +1392,14 @@ export default function TaskDetail() {
           <div style={styles.summaryItem}>
             Post: {counts.post}/{POST_LIMIT}
           </div>
-          <div style={styles.summaryItem}>
-            Total: {counts.total}/25
-          </div>
+          <div style={styles.summaryItem}>Total: {counts.total}/25</div>
         </div>
-        
+
         {!isOnline && (
           <div style={styles.offlineNotice}>
-            <small>Network: Offline • Images will sync automatically when back online</small>
+            <small>
+              Network: Offline • Images will sync automatically when back online
+            </small>
           </div>
         )}
       </div>
@@ -1407,358 +1410,367 @@ export default function TaskDetail() {
 }
 
 const styles = {
+  timeSection: {
+    display: "flex",
+    justifyContent: "center",
+    backgroundColor: "white",
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    color: "#374151",
+    marginBottom: "20px",
+  },
   container: {
-    backgroundColor: 'white',
-    minHeight: '100vh',
-    padding: '16px',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    color: '#374151',
+    backgroundColor: "white",
+    minHeight: "100vh",
+    padding: "16px",
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    color: "#374151",
   },
   errorContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    padding: '20px',
-    textAlign: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "100vh",
+    padding: "20px",
+    textAlign: "center",
   },
   header: {
-    marginBottom: '24px',
-    position: 'relative',
-    display:"flex",
+    position: "relative",
+    display: "flex",
   },
   backButton: {
-    height:"10px",
-    background: 'none',
-    border: 'none',
-    color: '#6b7280',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    padding: '8px 0',
-    ':hover': {
-      color: '#374151',
+    height: "10px",
+    background: "none",
+    border: "none",
+    color: "#6b7280",
+    fontSize: "14px",
+    fontWeight: "500",
+    cursor: "pointer",
+    padding: "8px 0",
+    ":hover": {
+      color: "#374151",
     },
-    marginRight:"20px"
+    marginRight: "20px",
   },
   mainTitle: {
-    fontSize: '20px',
-    fontWeight: '600',
-    color: '#111827',
-    margin: '0 0 4px 0',
-    lineHeight: '1.3',
-    textAlign: 'center',
+    fontSize: "20px",
+    fontWeight: "600",
+    color: "#111827",
+    margin: "0 0 4px 0",
+    lineHeight: "1.3",
+    textAlign: "center",
   },
   tabContainer: {
-    display: 'flex',
-    backgroundColor: '#f3f4f6',
-    padding: '4px',
-    borderRadius: '10px',
-    marginBottom: '16px',
-    gap: '4px',
+    display: "flex",
+    backgroundColor: "#f3f4f6",
+    padding: "4px",
+    borderRadius: "10px",
+    marginBottom: "16px",
+    gap: "4px",
   },
   activeTab: {
     flex: 1,
-    padding: '12px 0',
+    padding: "12px 0",
     backgroundColor: "#e9ac3d",
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#111827',
-    cursor: 'pointer',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#111827",
+    cursor: "pointer",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
   },
   activeTab1: {
     flex: 1,
-    padding: '12px 0',
+    padding: "12px 0",
     backgroundColor: "#189918",
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#111827',
-    cursor: 'pointer',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#111827",
+    cursor: "pointer",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
   },
   inactiveTab: {
     flex: 1,
-    padding: '12px 0',
-    backgroundColor: 'transparent',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#6b7280',
-    cursor: 'pointer',
-    ':hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    padding: "12px 0",
+    backgroundColor: "transparent",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#6b7280",
+    cursor: "pointer",
+    ":hover": {
+      backgroundColor: "rgba(255, 255, 255, 0.5)",
     },
-    ':disabled': {
+    ":disabled": {
       opacity: 0.5,
-      cursor: 'not-allowed',
-    }
+      cursor: "not-allowed",
+    },
   },
   evidenceSection: {
-    backgroundColor: '#e9ac3d',
-    borderRadius: '12px',
-    padding: '20px',
-    marginBottom: '16px',
-    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-    position: 'relative',
+    backgroundColor: "#e9ac3d",
+    borderRadius: "12px",
+    padding: "20px",
+    marginBottom: "16px",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+    position: "relative",
   },
   evidenceSections: {
-    backgroundColor: '#189918',
-    borderRadius: '12px',
-    padding: '20px',
-    marginBottom: '16px',
-    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-    position: 'relative',
+    backgroundColor: "#189918",
+    borderRadius: "12px",
+    padding: "20px",
+    marginBottom: "16px",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+    position: "relative",
   },
   sectionHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '16px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "16px",
   },
   sectionTitle: {
-    fontSize: '18px',
-    fontWeight: '600',
-    color: 'white',
-    margin: '0',
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "white",
+    margin: "0",
   },
   limitsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    padding: '12px',
-    borderRadius: '8px',
-    marginBottom: '16px',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    padding: "12px",
+    borderRadius: "8px",
+    marginBottom: "16px",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
   },
   limitItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '8px',
-    fontSize: '14px',
-    color: 'white',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "8px",
+    fontSize: "14px",
+    color: "white",
   },
   limitLabel: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: "rgba(255, 255, 255, 0.9)",
   },
   limitCount: {
-    color: '#d1fae5',
-    fontWeight: '600',
+    color: "#d1fae5",
+    fontWeight: "600",
   },
   limitReached: {
-    color: '#fecaca',
-    fontWeight: '600',
+    color: "#fecaca",
+    fontWeight: "600",
   },
   imagePreview: {
-    backgroundColor: '#000',
-    borderRadius: '8px',
-    height: '250px',
-    marginBottom: '12px',
-    border: '1px solid #e5e7eb',
-    overflow: 'hidden',
-    position: 'relative',
+    backgroundColor: "#000",
+    borderRadius: "8px",
+    height: "250px",
+    marginBottom: "12px",
+    border: "1px solid #e5e7eb",
+    overflow: "hidden",
+    position: "relative",
   },
   cameraOffPlaceholder: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f3f4f6',
-    color: '#6b7280',
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f3f4f6",
+    color: "#6b7280",
   },
   cameraOffIcon: {
-    fontSize: '40px',
-    marginBottom: '10px',
+    fontSize: "40px",
+    marginBottom: "10px",
   },
   cameraOffText: {
-    fontSize: '14px',
+    fontSize: "14px",
     margin: 0,
   },
   statusContainer: {
-    marginBottom: '16px',
-    minHeight: '40px',
+    marginBottom: "16px",
+    minHeight: "40px",
   },
   offlineIndicator: {
-    backgroundColor: '#fef3c7',
-    border: '1px solid #fde68a',
-    color: '#92400e',
-    padding: '8px 12px',
-    borderRadius: '6px',
-    fontSize: '14px',
-    marginBottom: '8px',
+    backgroundColor: "#fef3c7",
+    border: "1px solid #fde68a",
+    color: "#92400e",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    fontSize: "14px",
+    marginBottom: "8px",
   },
   uploadingIndicator: {
-    backgroundColor: '#dbeafe',
-    border: '1px solid #bfdbfe',
-    color: '#1e40af',
-    padding: '8px 12px',
-    borderRadius: '6px',
-    fontSize: '14px',
-    marginBottom: '8px',
+    backgroundColor: "#dbeafe",
+    border: "1px solid #bfdbfe",
+    color: "#1e40af",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    fontSize: "14px",
+    marginBottom: "8px",
   },
   limitIndicator: {
-    backgroundColor: '#fee2e2',
-    border: '1px solid #fecaca',
-    color: '#991b1b',
-    padding: '8px 12px',
-    borderRadius: '6px',
-    fontSize: '14px',
-    marginBottom: '8px',
+    backgroundColor: "#fee2e2",
+    border: "1px solid #fecaca",
+    color: "#991b1b",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    fontSize: "14px",
+    marginBottom: "8px",
   },
   compressingOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 10,
-    borderRadius: '12px',
+    borderRadius: "12px",
   },
   compressingSpinner: {
-    width: '40px',
-    height: '40px',
-    border: '4px solid #f3f3f3',
-    borderTop: '4px solid #10b981',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
-    marginBottom: '10px',
+    width: "40px",
+    height: "40px",
+    border: "4px solid #f3f3f3",
+    borderTop: "4px solid #10b981",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+    marginBottom: "10px",
   },
   compressingText: {
-    color: '#374151',
-    fontSize: '14px',
-    fontWeight: '500',
+    color: "#374151",
+    fontSize: "14px",
+    fontWeight: "500",
   },
   captureButton: {
-    width: '100%',
-    padding: '14px 0',
-    border: 'none',
-    borderRadius: '10px',
-    fontSize: '16px',
-    fontWeight: '600',
-    color: 'white',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    marginBottom: '16px',
-    ':hover:not(:disabled)': {
+    width: "100%",
+    padding: "14px 0",
+    border: "none",
+    borderRadius: "10px",
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "white",
+    cursor: "pointer",
+    transition: "all 0.2s",
+    marginBottom: "16px",
+    ":hover:not(:disabled)": {
       opacity: 0.9,
-      transform: 'translateY(-1px)',
+      transform: "translateY(-1px)",
     },
-    ':disabled': {
-      cursor: 'not-allowed',
-    }
+    ":disabled": {
+      cursor: "not-allowed",
+    },
   },
   offlineImagesContainer: {
-    marginTop: '20px',
-    paddingTop: '20px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.3)',
+    marginTop: "20px",
+    paddingTop: "20px",
+    borderTop: "1px solid rgba(255, 255, 255, 0.3)",
   },
   offlineImagesGrid: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '8px',
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "8px",
   },
   offlineImageWrapper: {
-    position: 'relative',
-    width: '60px',
-    height: '60px',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    border: '2px solid rgba(255, 255, 255, 0.5)',
+    position: "relative",
+    width: "60px",
+    height: "60px",
+    borderRadius: "8px",
+    overflow: "hidden",
+    border: "2px solid rgba(255, 255, 255, 0.5)",
   },
   offlineImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    backgroundColor: '#f3f4f6',
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    backgroundColor: "#f3f4f6",
   },
   offlineImageInfo: {
-    position: 'absolute',
-    top: '2px',
-    left: '2px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
+    position: "absolute",
+    top: "2px",
+    left: "2px",
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
   },
   imageIndex: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    color: 'white',
-    fontSize: '10px',
-    padding: '2px 4px',
-    borderRadius: '4px',
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    color: "white",
+    fontSize: "10px",
+    padding: "2px 4px",
+    borderRadius: "4px",
   },
   uploadedBadge: {
-    backgroundColor: '#10b981',
-    color: 'white',
-    fontSize: '10px',
-    width: '14px',
-    height: '14px',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#10b981",
+    color: "white",
+    fontSize: "10px",
+    width: "14px",
+    height: "14px",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   uploadProgress: {
-    backgroundColor: 'rgba(59, 130, 246, 0.9)',
-    color: 'white',
-    fontSize: '8px',
-    padding: '2px 4px',
-    borderRadius: '4px',
+    backgroundColor: "rgba(59, 130, 246, 0.9)",
+    color: "white",
+    fontSize: "8px",
+    padding: "2px 4px",
+    borderRadius: "4px",
   },
   removeImageButton: {
-    position: 'absolute',
-    bottom: '2px',
-    right: '2px',
-    backgroundColor: 'rgba(239, 68, 68, 0.9)',
-    color: 'white',
-    border: 'none',
-    borderRadius: '50%',
-    width: '18px',
-    height: '18px',
-    fontSize: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
+    position: "absolute",
+    bottom: "2px",
+    right: "2px",
+    backgroundColor: "rgba(239, 68, 68, 0.9)",
+    color: "white",
+    border: "none",
+    borderRadius: "50%",
+    width: "18px",
+    height: "18px",
+    fontSize: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
     padding: 0,
-    ':hover': {
-      backgroundColor: '#ef4444',
-      transform: 'scale(1.1)',
-    }
+    ":hover": {
+      backgroundColor: "#ef4444",
+      transform: "scale(1.1)",
+    },
   },
   bottomSection: {
-    padding: '0 4px',
+    padding: "0 4px",
   },
   taskSummary: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    backgroundColor: '#f9fafb',
-    borderRadius: '8px',
-    padding: '12px',
-    fontSize: '14px',
-    color: '#374151',
-    marginBottom: '8px',
+    display: "flex",
+    justifyContent: "space-around",
+    backgroundColor: "#f9fafb",
+    borderRadius: "8px",
+    padding: "12px",
+    fontSize: "14px",
+    color: "#374151",
+    marginBottom: "8px",
   },
   summaryItem: {
-    fontWeight: '500',
+    fontWeight: "500",
   },
   offlineNotice: {
-    textAlign: 'center',
-    color: '#6b7280',
-    fontSize: '12px',
-    padding: '8px',
-    backgroundColor: '#f3f4f6',
-    borderRadius: '6px',
-  }
+    textAlign: "center",
+    color: "#6b7280",
+    fontSize: "12px",
+    padding: "8px",
+    backgroundColor: "#f3f4f6",
+    borderRadius: "6px",
+  },
 };

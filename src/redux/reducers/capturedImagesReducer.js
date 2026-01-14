@@ -1,5 +1,3 @@
-
-
 // // reducers/capturedImagesReducer.js
 // const initialState = {
 //   // Structure: { taskId: { duringActivity: [], postActivity: [] } }
@@ -18,10 +16,10 @@
 //         ...state,
 //         currentTaskId: action.payload
 //       };
-    
+
 //     case "CAPTURE_IMAGE":
 //       const { taskId, imageData, tab, timestamp, stage, scheduleId, storeId, activityId } = action.payload;
-      
+
 //       // Initialize task if it doesn't exist
 //       if (!state.tasks[taskId]) {
 //         state.tasks[taskId] = {
@@ -29,7 +27,7 @@
 //           postActivity: []
 //         };
 //       }
-      
+
 //       // Check limits before adding
 //       if (tab === "during") {
 //         const currentDuringCount = state.tasks[taskId].duringActivity.length;
@@ -44,7 +42,7 @@
 //           return state; // Don't add, return current state
 //         }
 //       }
-      
+
 //       const imageObject = {
 //         data: imageData,
 //         timestamp: timestamp,
@@ -55,7 +53,7 @@
 //         uploaded: false,
 //         uploadAttempts: 0 // Track upload retry attempts
 //       };
-      
+
 //       if (tab === "during") {
 //         return {
 //           ...state,
@@ -79,11 +77,11 @@
 //           }
 //         };
 //       }
-    
+
 //     case "ADD_UPLOADED_IMAGE":
-//       const { 
-//         taskId: uploadedTaskId, 
-//         tab: uploadedTab, 
+//       const {
+//         taskId: uploadedTaskId,
+//         tab: uploadedTab,
 //         imageData: uploadedImageData,
 //         timestamp: uploadedTimestamp,
 //         stage: uploadedStage,
@@ -91,7 +89,7 @@
 //         storeId: uploadedStoreId,
 //         activityId: uploadedActivityId
 //       } = action.payload;
-      
+
 //       // Initialize task if it doesn't exist
 //       if (!state.tasks[uploadedTaskId]) {
 //         state.tasks[uploadedTaskId] = {
@@ -99,7 +97,7 @@
 //           postActivity: []
 //         };
 //       }
-      
+
 //       // Check limits before adding (even for uploaded images)
 //       if (uploadedTab === "during") {
 //         const currentDuringCount = state.tasks[uploadedTaskId].duringActivity.length;
@@ -114,7 +112,7 @@
 //           return state;
 //         }
 //       }
-      
+
 //       const uploadedImageObject = {
 //         data: uploadedImageData,
 //         timestamp: uploadedTimestamp || new Date().toISOString(),
@@ -125,7 +123,7 @@
 //         uploaded: true,
 //         uploadAttempts: 0
 //       };
-      
+
 //       if (uploadedTab === "during") {
 //         return {
 //           ...state,
@@ -149,14 +147,14 @@
 //           }
 //         };
 //       }
-    
+
 //     case "UPDATE_CAPTURED_IMAGE":
 //       const { taskId: updateTaskId, imageData: updateImageData, tab: updateTab, index } = action.payload;
-      
+
 //       if (!state.tasks[updateTaskId]) {
 //         return state; // Task doesn't exist
 //       }
-      
+
 //       if (updateTab === "during") {
 //         if (index >= 0 && index < state.tasks[updateTaskId].duringActivity.length) {
 //           return {
@@ -165,7 +163,7 @@
 //               ...state.tasks,
 //               [updateTaskId]: {
 //                 ...state.tasks[updateTaskId],
-//                 duringActivity: state.tasks[updateTaskId].duringActivity.map((img, idx) => 
+//                 duringActivity: state.tasks[updateTaskId].duringActivity.map((img, idx) =>
 //                   idx === index ? { ...img, data: updateImageData } : img
 //                 )
 //               }
@@ -180,7 +178,7 @@
 //               ...state.tasks,
 //               [updateTaskId]: {
 //                 ...state.tasks[updateTaskId],
-//                 postActivity: state.tasks[updateTaskId].postActivity.map((img, idx) => 
+//                 postActivity: state.tasks[updateTaskId].postActivity.map((img, idx) =>
 //                   idx === index ? { ...img, data: updateImageData } : img
 //                 )
 //               }
@@ -189,14 +187,14 @@
 //         }
 //       }
 //       return state;
-    
+
 //     case "REMOVE_IMAGE":
 //       const { taskId: removeTaskId, tab: removeTab, index: removeIndex } = action.payload;
-      
+
 //       if (!state.tasks[removeTaskId]) {
 //         return state; // Task doesn't exist
 //       }
-      
+
 //       if (removeTab === "during") {
 //         if (removeIndex >= 0 && removeIndex < state.tasks[removeTaskId].duringActivity.length) {
 //           return {
@@ -205,7 +203,7 @@
 //               ...state.tasks,
 //               [removeTaskId]: {
 //                 ...state.tasks[removeTaskId],
-//                 duringActivity: state.tasks[removeTaskId].duringActivity.filter((_, idx) => 
+//                 duringActivity: state.tasks[removeTaskId].duringActivity.filter((_, idx) =>
 //                   idx !== removeIndex
 //                 )
 //               }
@@ -220,7 +218,7 @@
 //               ...state.tasks,
 //               [removeTaskId]: {
 //                 ...state.tasks[removeTaskId],
-//                 postActivity: state.tasks[removeTaskId].postActivity.filter((_, idx) => 
+//                 postActivity: state.tasks[removeTaskId].postActivity.filter((_, idx) =>
 //                   idx !== removeIndex
 //                 )
 //               }
@@ -229,27 +227,27 @@
 //         }
 //       }
 //       return state;
-    
+
 //     case "MARK_IMAGE_UPLOADED":
-//       const { 
-//         taskId: markTaskId, 
-//         tab: markTab, 
+//       const {
+//         taskId: markTaskId,
+//         tab: markTab,
 //         index: markIndex,
 //         scheduleId: markScheduleId,
 //         storeId: markStoreId,
 //         activityId: markActivityId
 //       } = action.payload;
-      
+
 //       if (!state.tasks[markTaskId]) {
 //         return state;
 //       }
-      
+
 //       // Helper function to mark image as uploaded
 //       const markAsUploaded = (images) => {
 //         if (markIndex >= 0 && markIndex < images.length) {
-//           return images.map((img, idx) => 
-//             idx === markIndex ? { 
-//               ...img, 
+//           return images.map((img, idx) =>
+//             idx === markIndex ? {
+//               ...img,
 //               uploaded: true,
 //               // Update IDs if provided (in case they were missing before)
 //               scheduleId: markScheduleId || img.scheduleId,
@@ -260,7 +258,7 @@
 //         }
 //         return images;
 //       };
-      
+
 //       if (markTab === "during") {
 //         return {
 //           ...state,
@@ -284,30 +282,30 @@
 //           }
 //         };
 //       }
-    
+
 //     case "INCREMENT_UPLOAD_ATTEMPTS":
-//       const { 
-//         taskId: attemptsTaskId, 
-//         tab: attemptsTab, 
-//         index: attemptsIndex 
+//       const {
+//         taskId: attemptsTaskId,
+//         tab: attemptsTab,
+//         index: attemptsIndex
 //       } = action.payload;
-      
+
 //       if (!state.tasks[attemptsTaskId]) {
 //         return state;
 //       }
-      
+
 //       const incrementAttempts = (images) => {
 //         if (attemptsIndex >= 0 && attemptsIndex < images.length) {
-//           return images.map((img, idx) => 
-//             idx === attemptsIndex ? { 
-//               ...img, 
-//               uploadAttempts: (img.uploadAttempts || 0) + 1 
+//           return images.map((img, idx) =>
+//             idx === attemptsIndex ? {
+//               ...img,
+//               uploadAttempts: (img.uploadAttempts || 0) + 1
 //             } : img
 //           );
 //         }
 //         return images;
 //       };
-      
+
 //       if (attemptsTab === "during") {
 //         return {
 //           ...state,
@@ -331,14 +329,14 @@
 //           }
 //         };
 //       }
-    
+
 //     case "CLEAR_TASK_IMAGES":
 //       const taskIdToClear = action.payload;
-      
+
 //       if (!state.tasks[taskIdToClear]) {
 //         return state;
 //       }
-      
+
 //       return {
 //         ...state,
 //         tasks: {
@@ -349,14 +347,14 @@
 //           }
 //         }
 //       };
-    
+
 //     case "REMOVE_UPLOADED_IMAGES":
 //       const removeUploadedTaskId = action.payload;
-      
+
 //       if (!state.tasks[removeUploadedTaskId]) {
 //         return state;
 //       }
-      
+
 //       // Remove only uploaded images (keep pending ones)
 //       return {
 //         ...state,
@@ -368,14 +366,14 @@
 //           }
 //         }
 //       };
-    
+
 //     case "CLEAR_ALL_IMAGES":
 //       return initialState;
-    
+
 //     // Utility action to check limits (can be used by components)
 //     case "CHECK_TASK_LIMITS":
 //       const checkTaskId = action.payload;
-      
+
 //       if (!state.tasks[checkTaskId]) {
 //         return {
 //           ...state,
@@ -388,29 +386,29 @@
 //           }
 //         };
 //       }
-      
+
 //       const duringCount = state.tasks[checkTaskId].duringActivity.length;
 //       const postCount = state.tasks[checkTaskId].postActivity.length;
-      
+
 //       return {
 //         ...state,
 //         limits: {
 //           ...state.limits,
 //           [checkTaskId]: {
-//             during: { 
-//               count: duringCount, 
-//               limit: DURING_ACTIVITY_LIMIT, 
-//               reached: duringCount >= DURING_ACTIVITY_LIMIT 
+//             during: {
+//               count: duringCount,
+//               limit: DURING_ACTIVITY_LIMIT,
+//               reached: duringCount >= DURING_ACTIVITY_LIMIT
 //             },
-//             post: { 
-//               count: postCount, 
-//               limit: POST_ACTIVITY_LIMIT, 
-//               reached: postCount >= POST_ACTIVITY_LIMIT 
+//             post: {
+//               count: postCount,
+//               limit: POST_ACTIVITY_LIMIT,
+//               reached: postCount >= POST_ACTIVITY_LIMIT
 //             }
 //           }
 //         }
 //       };
-    
+
 //     default:
 //       return state;
 //   }
@@ -462,22 +460,23 @@ export default function capturedImagesReducer(state = initialState, action) {
       return {
         ...state,
         currentUserId: action.payload.userId,
-        currentTaskId: action.payload.taskId
+        currentTaskId: action.payload.taskId,
       };
-    
+
     case "CAPTURE_IMAGE":
-      const { 
-        userId, 
-        taskId, 
-        imageData, 
-        tab, 
-        timestamp, 
-        stage, 
-        scheduleId, 
-        storeId, 
-        activityId 
+      const {
+        userId,
+        taskId,
+        imageData,
+        tab,
+        timestamp,
+        stage,
+        scheduleId,
+        storeId,
+        activityId,
       } = action.payload;
-      
+      const DOWork = action.payload.DOWork; // Extract DOWork from payload
+
       // Initialize user and task if they don't exist
       if (!state.userTasks[userId]) {
         state.userTasks[userId] = {};
@@ -485,25 +484,31 @@ export default function capturedImagesReducer(state = initialState, action) {
       if (!state.userTasks[userId][taskId]) {
         state.userTasks[userId][taskId] = {
           duringActivity: [],
-          postActivity: []
+          postActivity: [],
         };
       }
-      
+
       // Check limits before adding
       if (tab === "during") {
-        const currentDuringCount = state.userTasks[userId][taskId].duringActivity.length;
+        const currentDuringCount =
+          state.userTasks[userId][taskId].duringActivity.length;
         if (currentDuringCount >= DURING_ACTIVITY_LIMIT) {
-          console.warn(`During activity limit reached (${DURING_ACTIVITY_LIMIT}) for task ${taskId}`);
+          console.warn(
+            `During activity limit reached (${DURING_ACTIVITY_LIMIT}) for task ${taskId}`
+          );
           return state;
         }
       } else if (tab === "post") {
-        const currentPostCount = state.userTasks[userId][taskId].postActivity.length;
+        const currentPostCount =
+          state.userTasks[userId][taskId].postActivity.length;
         if (currentPostCount >= POST_ACTIVITY_LIMIT) {
-          console.warn(`Post activity limit reached (${POST_ACTIVITY_LIMIT}) for task ${taskId}`);
+          console.warn(
+            `Post activity limit reached (${POST_ACTIVITY_LIMIT}) for task ${taskId}`
+          );
           return state;
         }
       }
-      
+
       const imageObject = {
         data: imageData,
         timestamp: timestamp,
@@ -511,10 +516,11 @@ export default function capturedImagesReducer(state = initialState, action) {
         scheduleId: scheduleId,
         storeId: storeId,
         activityId: activityId,
+        DOWork: DOWork, // Add DOWork to imageObject
         uploaded: false,
-        uploadAttempts: 0
+        uploadAttempts: 0,
       };
-      
+
       if (tab === "during") {
         return {
           ...state,
@@ -524,10 +530,13 @@ export default function capturedImagesReducer(state = initialState, action) {
               ...state.userTasks[userId],
               [taskId]: {
                 ...state.userTasks[userId][taskId],
-                duringActivity: [...state.userTasks[userId][taskId].duringActivity, imageObject]
-              }
-            }
-          }
+                duringActivity: [
+                  ...state.userTasks[userId][taskId].duringActivity,
+                  imageObject,
+                ],
+              },
+            },
+          },
         };
       } else {
         return {
@@ -538,51 +547,61 @@ export default function capturedImagesReducer(state = initialState, action) {
               ...state.userTasks[userId],
               [taskId]: {
                 ...state.userTasks[userId][taskId],
-                postActivity: [...state.userTasks[userId][taskId].postActivity, imageObject]
-              }
-            }
-          }
+                postActivity: [
+                  ...state.userTasks[userId][taskId].postActivity,
+                  imageObject,
+                ],
+              },
+            },
+          },
         };
       }
-    
+
     case "ADD_UPLOADED_IMAGE":
-      const { 
-        userId: uploadedUserId, 
-        taskId: uploadedTaskId, 
-        tab: uploadedTab, 
+      const {
+        userId: uploadedUserId,
+        taskId: uploadedTaskId,
+        tab: uploadedTab,
         imageData: uploadedImageData,
         timestamp: uploadedTimestamp,
         stage: uploadedStage,
         scheduleId: uploadedScheduleId,
         storeId: uploadedStoreId,
-        activityId: uploadedActivityId
+        activityId: uploadedActivityId,
       } = action.payload;
-      
+      const uploadedDOWork = action.payload.DOWork; // Extract DOWork from payload
+
       if (!state.userTasks[uploadedUserId]) {
         state.userTasks[uploadedUserId] = {};
       }
       if (!state.userTasks[uploadedUserId][uploadedTaskId]) {
         state.userTasks[uploadedUserId][uploadedTaskId] = {
           duringActivity: [],
-          postActivity: []
+          postActivity: [],
         };
       }
-      
+
       // Check limits
       if (uploadedTab === "during") {
-        const currentDuringCount = state.userTasks[uploadedUserId][uploadedTaskId].duringActivity.length;
+        const currentDuringCount =
+          state.userTasks[uploadedUserId][uploadedTaskId].duringActivity.length;
         if (currentDuringCount >= DURING_ACTIVITY_LIMIT) {
-          console.warn(`Cannot add uploaded image: during activity limit reached for task ${uploadedTaskId}`);
+          console.warn(
+            `Cannot add uploaded image: during activity limit reached for task ${uploadedTaskId}`
+          );
           return state;
         }
       } else if (uploadedTab === "post") {
-        const currentPostCount = state.userTasks[uploadedUserId][uploadedTaskId].postActivity.length;
+        const currentPostCount =
+          state.userTasks[uploadedUserId][uploadedTaskId].postActivity.length;
         if (currentPostCount >= POST_ACTIVITY_LIMIT) {
-          console.warn(`Cannot add uploaded image: post activity limit reached for task ${uploadedTaskId}`);
+          console.warn(
+            `Cannot add uploaded image: post activity limit reached for task ${uploadedTaskId}`
+          );
           return state;
         }
       }
-      
+
       const uploadedImageObject = {
         data: uploadedImageData,
         timestamp: uploadedTimestamp || new Date().toISOString(),
@@ -590,10 +609,11 @@ export default function capturedImagesReducer(state = initialState, action) {
         scheduleId: uploadedScheduleId,
         storeId: uploadedStoreId,
         activityId: uploadedActivityId,
+        DOWork: uploadedDOWork, // Add DOWork to uploadedImageObject
         uploaded: true,
-        uploadAttempts: 0
+        uploadAttempts: 0,
       };
-      
+
       if (uploadedTab === "during") {
         return {
           ...state,
@@ -603,10 +623,14 @@ export default function capturedImagesReducer(state = initialState, action) {
               ...state.userTasks[uploadedUserId],
               [uploadedTaskId]: {
                 ...state.userTasks[uploadedUserId][uploadedTaskId],
-                duringActivity: [...state.userTasks[uploadedUserId][uploadedTaskId].duringActivity, uploadedImageObject]
-              }
-            }
-          }
+                duringActivity: [
+                  ...state.userTasks[uploadedUserId][uploadedTaskId]
+                    .duringActivity,
+                  uploadedImageObject,
+                ],
+              },
+            },
+          },
         };
       } else {
         return {
@@ -617,27 +641,38 @@ export default function capturedImagesReducer(state = initialState, action) {
               ...state.userTasks[uploadedUserId],
               [uploadedTaskId]: {
                 ...state.userTasks[uploadedUserId][uploadedTaskId],
-                postActivity: [...state.userTasks[uploadedUserId][uploadedTaskId].postActivity, uploadedImageObject]
-              }
-            }
-          }
+                postActivity: [
+                  ...state.userTasks[uploadedUserId][uploadedTaskId]
+                    .postActivity,
+                  uploadedImageObject,
+                ],
+              },
+            },
+          },
         };
       }
-    
+
     case "REMOVE_IMAGE":
-      const { 
-        userId: removeUserId, 
-        taskId: removeTaskId, 
-        tab: removeTab, 
-        index: removeIndex 
+      const {
+        userId: removeUserId,
+        taskId: removeTaskId,
+        tab: removeTab,
+        index: removeIndex,
       } = action.payload;
-      
-      if (!state.userTasks[removeUserId] || !state.userTasks[removeUserId][removeTaskId]) {
+
+      if (
+        !state.userTasks[removeUserId] ||
+        !state.userTasks[removeUserId][removeTaskId]
+      ) {
         return state;
       }
-      
+
       if (removeTab === "during") {
-        if (removeIndex >= 0 && removeIndex < state.userTasks[removeUserId][removeTaskId].duringActivity.length) {
+        if (
+          removeIndex >= 0 &&
+          removeIndex <
+            state.userTasks[removeUserId][removeTaskId].duringActivity.length
+        ) {
           return {
             ...state,
             userTasks: {
@@ -646,16 +681,20 @@ export default function capturedImagesReducer(state = initialState, action) {
                 ...state.userTasks[removeUserId],
                 [removeTaskId]: {
                   ...state.userTasks[removeUserId][removeTaskId],
-                  duringActivity: state.userTasks[removeUserId][removeTaskId].duringActivity.filter((_, idx) => 
-                    idx !== removeIndex
-                  )
-                }
-              }
-            }
+                  duringActivity: state.userTasks[removeUserId][
+                    removeTaskId
+                  ].duringActivity.filter((_, idx) => idx !== removeIndex),
+                },
+              },
+            },
           };
         }
       } else {
-        if (removeIndex >= 0 && removeIndex < state.userTasks[removeUserId][removeTaskId].postActivity.length) {
+        if (
+          removeIndex >= 0 &&
+          removeIndex <
+            state.userTasks[removeUserId][removeTaskId].postActivity.length
+        ) {
           return {
             ...state,
             userTasks: {
@@ -664,41 +703,46 @@ export default function capturedImagesReducer(state = initialState, action) {
                 ...state.userTasks[removeUserId],
                 [removeTaskId]: {
                   ...state.userTasks[removeUserId][removeTaskId],
-                  postActivity: state.userTasks[removeUserId][removeTaskId].postActivity.filter((_, idx) => 
-                    idx !== removeIndex
-                  )
-                }
-              }
-            }
+                  postActivity: state.userTasks[removeUserId][
+                    removeTaskId
+                  ].postActivity.filter((_, idx) => idx !== removeIndex),
+                },
+              },
+            },
           };
         }
       }
       return state;
-    
+
     case "MARK_IMAGE_UPLOADED":
-      const { 
-        userId: markUserId, 
-        taskId: markTaskId, 
-        tab: markTab, 
-        index: markIndex
+      const {
+        userId: markUserId,
+        taskId: markTaskId,
+        tab: markTab,
+        index: markIndex,
       } = action.payload;
-      
-      if (!state.userTasks[markUserId] || !state.userTasks[markUserId][markTaskId]) {
+
+      if (
+        !state.userTasks[markUserId] ||
+        !state.userTasks[markUserId][markTaskId]
+      ) {
         return state;
       }
-      
+
       const markAsUploaded = (images) => {
         if (markIndex >= 0 && markIndex < images.length) {
-          return images.map((img, idx) => 
-            idx === markIndex ? { 
-              ...img, 
-              uploaded: true
-            } : img
+          return images.map((img, idx) =>
+            idx === markIndex
+              ? {
+                  ...img,
+                  uploaded: true,
+                }
+              : img
           );
         }
         return images;
       };
-      
+
       if (markTab === "during") {
         return {
           ...state,
@@ -708,10 +752,12 @@ export default function capturedImagesReducer(state = initialState, action) {
               ...state.userTasks[markUserId],
               [markTaskId]: {
                 ...state.userTasks[markUserId][markTaskId],
-                duringActivity: markAsUploaded(state.userTasks[markUserId][markTaskId].duringActivity)
-              }
-            }
-          }
+                duringActivity: markAsUploaded(
+                  state.userTasks[markUserId][markTaskId].duringActivity
+                ),
+              },
+            },
+          },
         };
       } else {
         return {
@@ -722,20 +768,25 @@ export default function capturedImagesReducer(state = initialState, action) {
               ...state.userTasks[markUserId],
               [markTaskId]: {
                 ...state.userTasks[markUserId][markTaskId],
-                postActivity: markAsUploaded(state.userTasks[markUserId][markTaskId].postActivity)
-              }
-            }
-          }
+                postActivity: markAsUploaded(
+                  state.userTasks[markUserId][markTaskId].postActivity
+                ),
+              },
+            },
+          },
         };
       }
-    
+
     case "CLEAR_USER_TASK_IMAGES":
       const { userId: clearUserId, taskId: clearTaskId } = action.payload;
-      
-      if (!state.userTasks[clearUserId] || !state.userTasks[clearUserId][clearTaskId]) {
+
+      if (
+        !state.userTasks[clearUserId] ||
+        !state.userTasks[clearUserId][clearTaskId]
+      ) {
         return state;
       }
-      
+
       return {
         ...state,
         userTasks: {
@@ -744,40 +795,40 @@ export default function capturedImagesReducer(state = initialState, action) {
             ...state.userTasks[clearUserId],
             [clearTaskId]: {
               duringActivity: [],
-              postActivity: []
-            }
-          }
-        }
+              postActivity: [],
+            },
+          },
+        },
       };
-    
+
     case "CLEAR_ALL_IMAGES":
       return {
         ...initialState,
-        lastCleanupTimestamp: new Date().toISOString()
+        lastCleanupTimestamp: new Date().toISOString(),
       };
-    
+
     case "CLEAR_OLD_USER_IMAGES":
       const { userId: oldUserId } = action.payload;
-      
+
       if (!state.userTasks[oldUserId]) {
         return state;
       }
-      
+
       const updatedUserTasks = { ...state.userTasks };
       delete updatedUserTasks[oldUserId];
-      
+
       return {
         ...state,
         userTasks: updatedUserTasks,
-        lastCleanupTimestamp: new Date().toISOString()
+        lastCleanupTimestamp: new Date().toISOString(),
       };
-    
+
     case "SET_LAST_CLEANUP_TIMESTAMP":
       return {
         ...state,
-        lastCleanupTimestamp: action.payload
+        lastCleanupTimestamp: action.payload,
       };
-    
+
     default:
       return state;
   }
@@ -790,7 +841,7 @@ export const getUserTaskImageCounts = (state, userId, taskId) => {
   return {
     during: task.duringActivity.length,
     post: task.postActivity.length,
-    total: task.duringActivity.length + task.postActivity.length
+    total: task.duringActivity.length + task.postActivity.length,
   };
 };
 
@@ -811,5 +862,5 @@ export const canCaptureMorePost = (state, userId, taskId) => {
 export const getTaskLimits = () => ({
   DURING_ACTIVITY_LIMIT,
   POST_ACTIVITY_LIMIT,
-  TOTAL_LIMIT: DURING_ACTIVITY_LIMIT + POST_ACTIVITY_LIMIT
+  TOTAL_LIMIT: DURING_ACTIVITY_LIMIT + POST_ACTIVITY_LIMIT,
 });

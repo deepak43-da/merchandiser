@@ -16,7 +16,6 @@
 //   }
 // }
 
-
 // const CACHE_NAME = "pwa-cache-v1";
 
 // const APP_SHELL = [
@@ -70,15 +69,10 @@
 //   );
 // });
 
-
 const CACHE_NAME = "pwa-cache-v1";
-const CLEANUP_KEY = 'last_data_cleanup_timestamp';
+const CLEANUP_KEY = "last_data_cleanup_timestamp";
 
-const APP_SHELL = [
-  "/",
-  "/index.html",
-  "/manifest.json"
-];
+const APP_SHELL = ["/", "/index.html", "/manifest.json"];
 
 // Install
 self.addEventListener("install", (event) => {
@@ -95,20 +89,34 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     Promise.all([
       // Clean old caches
-      caches.keys().then((keys) =>
-        Promise.all(
-          keys
-            .filter((key) => key !== CACHE_NAME)
-            .map((key) => caches.delete(key))
-        )
-      ),
-      // Check for 24-hour cleanup
+      caches
+        .keys()
+        .then((keys) =>
+          Promise.all(
+            keys
+              .filter((key) => key !== CACHE_NAME)
+              .map((key) => caches.delete(key))
+          )
+        ),
+      // Check for daily cleanup at 00:00:01
       (async () => {
         const lastCleanup = localStorage.getItem(CLEANUP_KEY);
-        const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
         const now = new Date();
-
-        if (!lastCleanup || (now - new Date(lastCleanup)) > twentyFourHoursInMs) {
+        // Get today's date at 00:00:01
+        const todayMidnight = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          0,
+          0,
+          1,
+          0
+        );
+        // If lastCleanup is missing or before todayMidnight and now is after todayMidnight, cleanup
+        if (
+          !lastCleanup ||
+          (new Date(lastCleanup) < todayMidnight && now >= todayMidnight)
+        ) {
           // Clear IndexedDB (Redux store)
           if (window.indexedDB) {
             const databases = await window.indexedDB.databases();
@@ -118,16 +126,14 @@ self.addEventListener("activate", (event) => {
               }
             }
           }
-          
           // Clear localStorage items
-          localStorage.removeItem('auth');
-          localStorage.removeItem('id');
-          localStorage.removeItem('maindata');
-          
+          localStorage.removeItem("auth");
+          localStorage.removeItem("id");
+          localStorage.removeItem("maindata");
           // Update cleanup timestamp
           localStorage.setItem(CLEANUP_KEY, now.toISOString());
         }
-      })()
+      })(),
     ])
   );
   self.clients.claim();

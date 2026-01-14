@@ -1,3 +1,45 @@
+/* Fixed layout for TaskList */
+.fixed-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+  background: #f7f7f7;
+}
+
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* width: 100%; */
+  z-index: 10;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 12px 0 8px 0;
+}
+
+.scrollable-tasks {
+  flex: 1 1 auto;
+  /* overflow-y: auto; */
+  margin-bottom: 80px; /* height of footer */
+  padding: 0 10px;
+}
+
+.fixed-footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+  padding: 16px 0 12px 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 10px 10px 0 0;
+}
 /* App background */
 body {
   margin: 0;
@@ -116,8 +158,7 @@ body {
   color: #111827;
 }
 
-
-.logout{
+.logout {
   background-color: rgb(228, 60, 60);
   padding: 10px;
   border-radius: 20px;

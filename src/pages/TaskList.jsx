@@ -1,6 +1,3 @@
-
-
-
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -15,7 +12,7 @@ export default function TaskList() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-const maindata = JSON.parse(localStorage.getItem("maindata")) || [];
+  const maindata = JSON.parse(localStorage.getItem("maindata")) || [];
   useEffect(() => {
     if (id) {
       fetchTasks();
@@ -31,7 +28,7 @@ const maindata = JSON.parse(localStorage.getItem("maindata")) || [];
       //   { headers: { "Content-Type": "application/json" } }
       // );
 
-     setTasks(maindata);
+      setTasks(maindata);
     } catch (error) {
       console.error("API error:", error);
       alert("API error");
@@ -42,67 +39,67 @@ const maindata = JSON.parse(localStorage.getItem("maindata")) || [];
 
   // ... (previous imports and code remain the same until handleLogout) ...
 
-const handleLogout = () => {
-  // Only clear session data, NOT the captured images
-  localStorage.removeItem('auth');
-  localStorage.removeItem('id');
-  // Note: We keep 'maindata' to avoid unnecessary API calls
-  // localStorage.removeItem('maindata');
-  
-  // Navigate to login
-  navigate("/");
-};
+  const handleLogout = () => {
+    // Only clear session data, NOT the captured images
+    localStorage.removeItem("auth");
+    localStorage.removeItem("id");
+    // Note: We keep 'maindata' to avoid unnecessary API calls
+    // localStorage.removeItem('maindata');
 
-// ... (rest of the component remains the same) ...
+    // Navigate to login
+    navigate("/");
+  };
 
-// const handleLogout = () => {
-//   // 1. Dispatch logout action
-//   // dispatch({ type: "LOGOUT" });
-  
-//   // 2. Clear localStorage completely
-//   localStorage.clear();
-  
-//   // 3. Clear sessionStorage
-//   sessionStorage.clear();
-  
-//   // 4. Clear IndexedDB if used
-//   if (window.indexedDB) {
-//     window.indexedDB.databases().then((databases) => {
-//       databases.forEach((db) => {
-//         if (db.name) {
-//           window.indexedDB.deleteDatabase(db.name);
-//         }
-//       });
-//     });
-//   }
-// localStorage.setItem("maindata", [])
+  // ... (rest of the component remains the same) ...
 
-//   // 5. Clear all cookies
-//   document.cookie.split(";").forEach((c) => {
-//     document.cookie = c
-//       .replace(/^ +/, "")
-//       .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-//   });
-  
-//   // 6. Force a full page reload with cache clear
-//   navigate("/");
-//   window.location.reload();
-// };
+  // const handleLogout = () => {
+  //   // 1. Dispatch logout action
+  //   // dispatch({ type: "LOGOUT" });
+
+  //   // 2. Clear localStorage completely
+  //   localStorage.clear();
+
+  //   // 3. Clear sessionStorage
+  //   sessionStorage.clear();
+
+  //   // 4. Clear IndexedDB if used
+  //   if (window.indexedDB) {
+  //     window.indexedDB.databases().then((databases) => {
+  //       databases.forEach((db) => {
+  //         if (db.name) {
+  //           window.indexedDB.deleteDatabase(db.name);
+  //         }
+  //       });
+  //     });
+  //   }
+  // localStorage.setItem("maindata", [])
+
+  //   // 5. Clear all cookies
+  //   document.cookie.split(";").forEach((c) => {
+  //     document.cookie = c
+  //       .replace(/^ +/, "")
+  //       .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+  //   });
+
+  //   // 6. Force a full page reload with cache clear
+  //   navigate("/");
+  //   window.location.reload();
+  // };
 
   // In TaskList.js
 
-// const handleLogout = () => {
-//   localStorage.setItem("auth", false);
-//   localStorage.setItem("id", 0);
-  
-//   // Purge persisted storage
-//   persistor.purge();
-  
-//   // Optional: Dispatch logout action to reset redux state
-//   // dispatch({ type: "LOGOUT" });
-  
-//   navigate("/");
-// };
+  // const handleLogout = () => {
+  //   localStorage.setItem("auth", false);
+  //   localStorage.setItem("id", 0);
+
+  //   // Purge persisted storage
+  //   persistor.purge();
+
+  //   // Optional: Dispatch logout action to reset redux state
+  //   // dispatch({ type: "LOGOUT" });
+
+  //   navigate("/");
+  // };
 
   // const handleLogout = () => {
   //   localStorage.setItem("auth", false);
@@ -141,90 +138,120 @@ const handleLogout = () => {
   // };
 
   const isTaskActive = (task) => {
-  const now = new Date();
+    const now = new Date();
 
-  // ---- DATE RANGE CHECK ----
-  const startDate = new Date(task.StartDate);
-  const endDate = new Date(task.EndDate);
-  endDate.setHours(23, 59, 59, 999);
+    // ---- DATE RANGE CHECK ----
+    const startDate = new Date(task.StartDate);
+    const endDate = new Date(task.EndDate);
+    endDate.setHours(23, 59, 59, 999);
 
-  if (now < startDate || now > endDate) return false;
+    if (now < startDate || now > endDate) return false;
 
-  // ---- SLOT START TIME (12:00 PM) ----
-  const slotStart = new Date();
-  slotStart.setHours(12, 0, 0, 0); // 12:00 PM
+    // ---- TIME SLOT CHECK ----
+    const currentHour = now.getHours();
 
-  // ---- SLOT END TIME = start + duration ----
-  const slotEnd = new Date(slotStart);
-  slotEnd.setHours(slotEnd.getHours() + Number(task.Duration || 0));
+    if (task.TimeSlot === "Evening") {
+      // Evening: 3pm (15:00) to 6pm (18:00)
+      return currentHour >= 15 && currentHour < 18;
+    }
 
-  return now >= slotStart && now <= slotEnd;
-};
+    if (task.TimeSlot === "Night") {
+      // Night: 6pm (18:00) to midnight (0:00)
+      return currentHour >= 18 && currentHour <= 23;
+    }
 
+    // If TimeSlot doesn't match Evening or Night, return false
+    return false;
+  };
 
   const skeletonCount = 5;
 
   return (
-    <div className="mobile-wrapper">
+    <div className="mobile-wrapper fixed-layout">
       {/* HEADER */}
-      <div className="top-header">
-        <span className="store-title">
-          {tasks?.[0]?.Store || ""}
-        </span>
+      <div className="top-header fixed-header">
+        <span className="store-title">{tasks?.[0]?.Store || ""}</span>
         <span className="logout" onClick={handleLogout}>
           Logout
         </span>
       </div>
 
-      <h3 className="page-title">Today's Tasks</h3>
-
-      {loading ? (
-        Array.from({ length: skeletonCount }).map((_, index) => (
-          <div key={index} className="task-card">
-            <Stack spacing={1}>
-              <Skeleton variant="text" width="60%" height={24} />
-              <Skeleton variant="rectangular" width="100%" height={16} />
-              <Skeleton variant="text" width="40%" height={16} />
-              <Skeleton variant="text" width="50%" height={16} />
-            </Stack>
-          </div>
-        ))
-      ) : tasks.length === 0 ? (
-        <div className="no-tasks">No tasks found</div>
-      ) : (
-        tasks.map((t) => {
-          const active = isTaskActive(t);
-
-          return (
-            <div
-            style={{marginBottom:"20px"}}
-              key={t.ActivityID}
-            //   onClick={() => 
-            //     {active && navigate(`/task/${t.ActivityID}/${t.StoreID}/${t.ID}/${t.Supplier}/${t.Activity}`)}}
-            //   className={`task-card ${active ? "active" : "inactive"}`}
-            // >
-               onClick={() => 
-                 navigate(`/task/${t.ActivityID}/${t.StoreID}/${t.ID}/${t.Supplier}/${t.Activity}`)}
-             >
-              <div className="task-row">
-                <span className="task-title">{t.Supplier} - {t.Activity}</span>
-                <span className={`status-pill ${active ? "active" : "inactive"}`}>
-                  {active ? "Active" : "Inactive"}
-                </span>
-              </div>
-
-              <div className="task-id">Store: {t.Store}</div>
-
-              <div className="task-info">
-                <div className="info-row">🕒 {t.TimeSlot}</div>
-                {/* <div className="info-row">
-                  📅 {t.StartDate} - {t.EndDate}
-                </div> */}
-              </div>
+      <div className="scrollable-tasks">
+        <h3 className="page-title">Today's Tasks</h3>
+        {loading ? (
+          Array.from({ length: skeletonCount }).map((_, index) => (
+            <div key={index} className="task-card">
+              <Stack spacing={1}>
+                <Skeleton variant="text" width="60%" height={24} />
+                <Skeleton variant="rectangular" width="100%" height={16} />
+                <Skeleton variant="text" width="40%" height={16} />
+                <Skeleton variant="text" width="50%" height={16} />
+              </Stack>
             </div>
-          );
-        })
-      )}
+          ))
+        ) : tasks.length === 0 ? (
+          <div className="no-tasks">No tasks found</div>
+        ) : (
+          <div
+            style={{
+              overflowY: "auto",
+              maxHeight: "66vh",
+              marginBottom: "10px",
+              fontWeight: "bold",
+            }}
+          >
+            {tasks.map((t) => {
+              const active = isTaskActive(t);
+              return (
+                <div
+                  style={{
+                    marginBottom: "20px",
+                    cursor: active ? "pointer" : "not-allowed",
+                  }}
+                  key={t.ActivityID}
+                  onClick={() => {
+                    if (!active) {
+                      const url = `/task/${encodeURIComponent(
+                        t.ActivityID
+                      )}/${encodeURIComponent(t.StoreID)}/${encodeURIComponent(
+                        t.ID
+                      )}/${encodeURIComponent(t.Supplier)}/${encodeURIComponent(
+                        t.Activity
+                      )}/${encodeURIComponent(t.Duration)}/${encodeURIComponent(
+                        t.DOWork
+                      )}`;
+                      navigate(url);
+                    }
+                  }}
+                  // className={`task-card ${active ? "active" : "inactive"}`}
+                >
+                  <div className="task-row">
+                    <span className="task-title">
+                      {t.Supplier} - {t.Activity}
+                    </span>
+                    <span
+                      className={`status-pill ${
+                        active ? "active" : "inactive"
+                      }`}
+                    >
+                      {active ? "Active" : "Inactive"}
+                    </span>
+                  </div>
+                  <div className="task-id">Hrs Book: {t.Duration} hrs</div>
+                  <div className="task-info">
+                    <div className="info-row">🕒 {t.TimeSlot}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="footer fixed-footer">
+        <div>Evening (3pm till Before 6pm)</div>
+        <div>Night (6pm till Before Midnight)</div>
+      </div>
     </div>
   );
 }

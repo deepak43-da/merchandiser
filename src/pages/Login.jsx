@@ -56,13 +56,10 @@
 // //           {loading ? "Logging in..." : "Login"}
 // //         </button>
 
-      
 // //       </div>
 // //     </div>
 // //   );navigate
 // // }
-
-
 
 // import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
@@ -81,7 +78,6 @@
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [loading, setLoading] = useState(false);
-
 
 //   // const handleLogin = () => {
 //   //   // navigate("/tasks")
@@ -107,10 +103,7 @@
 // // // Access data
 // // console.log(response.data); // sometimes the data is inside response.data.d
 
-
 // //     console.log("API Response:", response.data);
-
- 
 
 // //     navigate(`/tasks/${email}`);
 
@@ -159,8 +152,6 @@
 
 //   }
 // },[isAuth,id])
-
-
 
 //   return (
 //     <div style={styles.container}>
@@ -211,8 +202,6 @@
 // >
 //   Login
 // </Button>
-
-
 
 //       </div>
 //     </div>
@@ -288,8 +277,6 @@
 //   },
 // };
 
-
-
 // import React, { useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 
@@ -348,12 +335,10 @@
 //           {loading ? "Logging in..." : "Login"}
 //         </button>
 
-      
 //       </div>
 //     </div>
 //   );navigate
 // }
-
 
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -364,30 +349,30 @@ import axios from "axios";
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Check for 24-hour cleanup on login
   const checkAndPerformCleanup = () => {
-    const lastCleanup = localStorage.getItem('last_data_cleanup_timestamp');
+    const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
     const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
     const now = new Date();
 
-    if (!lastCleanup || (now - new Date(lastCleanup)) > twentyFourHoursInMs) {
-      console.log('Performing 24-hour data cleanup on login...');
-      
+    if (!lastCleanup || now - new Date(lastCleanup) > twentyFourHoursInMs) {
+      console.log("Performing 24-hour data cleanup on login...");
+
       // Dispatch to clear Redux state
       dispatch({ type: "CLEAR_ALL_IMAGES" });
-      
+
       // Clear user session data
-      localStorage.removeItem('auth');
-      localStorage.removeItem('id');
-      localStorage.removeItem('maindata');
-      
+      localStorage.removeItem("auth");
+      localStorage.removeItem("id");
+      localStorage.removeItem("maindata");
+
       // Update cleanup timestamp
-      localStorage.setItem('last_data_cleanup_timestamp', now.toISOString());
+      localStorage.setItem("last_data_cleanup_timestamp", now.toISOString());
     }
   };
 
@@ -398,8 +383,8 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailySchedule_Get",
-        { StoreID: Number(email) },
+        "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/User_Login",
+        { Username: email, Password: password },
         {
           headers: {
             "Content-Type": "application/json",
@@ -408,16 +393,31 @@ export default function Login() {
       );
 
       console.log("API Response:", response.data);
-      
+
       // Check and perform cleanup if needed
       checkAndPerformCleanup();
-      
+
+      // Parse new API response
+      const loginData = response.data.data && response.data.data[0];
+      if (!loginData || loginData.LoginStatus !== "VALID") {
+        alert("Invalid credentials or API error");
+        setLoading(false);
+        return;
+      }
+
       // Store session data
-      localStorage.setItem("maindata", JSON.stringify(response.data.data));
       localStorage.setItem("auth", "true");
-      localStorage.setItem("id", Number(email));
-      
-      navigate(`/tasks/${email}`);
+      localStorage.setItem("UserID", loginData.UserID);
+      localStorage.setItem("Type", loginData.Type);
+      localStorage.setItem("StoreID", loginData.StoreID);
+      localStorage.setItem("maindata", JSON.stringify(loginData));
+
+      // Navigation logic
+      if (loginData.Type === "Admin") {
+        navigate("/admin/vendors");
+      } else {
+        navigate(`/tasks/${loginData.StoreID}`);
+      }
     } catch (error) {
       console.error("Login error:", error);
       alert("Invalid credentials or API error");
@@ -426,9 +426,73 @@ export default function Login() {
     }
   };
 
+  const dummyApiResponse = {
+    data: {
+      status: true,
+      loginType: 1, // 1 = Admin, 2 = Merchandiser
+      data: {
+        storeId: 12345,
+        storeName: "Tamimi Central Store",
+        city: "Riyadh",
+        scheduleDate: "2026-01-15",
+        tasks: [
+          {
+            taskId: 101,
+            taskName: "Check Inventory",
+            completed: false,
+          },
+          {
+            taskId: 102,
+            taskName: "Update Price Tags",
+            completed: true,
+          },
+        ],
+      },
+    },
+  };
+
+  // const handleLogin = async () => {
+  //   if (!email || !password) return;
+
+  //   setLoading(true);
+
+  //   try {
+  //     // Simulate API delay
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  //     const response = dummyApiResponse;
+
+  //     console.log("Dummy API Response:", response.data);
+
+  //     // Cleanup
+  //     checkAndPerformCleanup();
+
+  //     // Store session data
+  //     localStorage.setItem(
+  //       "maindata",
+  //       JSON.stringify(response.data.data)
+  //     );
+  //     localStorage.setItem("auth", "true");
+  //     localStorage.setItem("id", Number(email));
+  //     localStorage.setItem("loginType", response.data.loginType);
+
+  //     // Navigation logic (same as real API)
+  //     if (response.data.loginType === 1) {
+  //       navigate("/admin/vendors");
+  //     } else {
+  //       navigate(`/tasks/${email}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     alert("Invalid credentials");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const isAuth = localStorage.getItem("auth");
   const id = localStorage.getItem("id");
-  
+
   useEffect(() => {
     if (isAuth === "true" && Number(id) !== 0) {
       // Check cleanup on app start as well
@@ -436,7 +500,6 @@ export default function Login() {
       navigate(`/tasks/${id}`);
     }
   }, [isAuth, id, navigate]);
-
 
   return (
     <div style={styles.container}>
@@ -466,7 +529,7 @@ export default function Login() {
           />
         </div>
 
-                {/* <Button
+        {/* <Button
           variant="primary"
           size="xlarge"
           fullWidth
@@ -477,89 +540,87 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </Button> */}
 
-      <Button
-  variant="primary"
-  size="xlarge"
-  fullWidth
-  onClick={handleLogin}
-  isLoading={loading}
-  isDisabled={!email || !password || loading}
->
-  Login
-</Button>
-
-
-
+        <Button
+          variant="primary"
+          size="xlarge"
+          fullWidth
+          onClick={handleLogin}
+          isLoading={loading}
+          isDisabled={!email || !password || loading}
+        >
+          Login
+        </Button>
       </div>
     </div>
   );
 }
 
 const styles = {
-   container: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '80vh',   // ✅ REQUIRED
-    backgroundColor: '#f3f4f6',
-    padding: '20px',
+  container: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "80vh", // ✅ REQUIRED
+    backgroundColor: "#f3f4f6",
+    padding: "20px",
   },
   loginCard: {
-    width: '100%',
-    maxWidth: '400px',
-    backgroundColor: 'white',
-    padding: '28px',
-    borderRadius: '18px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    width: "100%",
+    maxWidth: "400px",
+    backgroundColor: "white",
+    padding: "28px",
+    borderRadius: "18px",
+    boxShadow:
+      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
   },
   title: {
-    fontSize: '24px',
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: '8px',
-    textAlign: 'center',
+    fontSize: "24px",
+    fontWeight: "600",
+    color: "#111827",
+    marginBottom: "8px",
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: '14px',
-    color: '#6b7280',
-    marginBottom: '28px',
-    textAlign: 'center',
+    fontSize: "14px",
+    color: "#6b7280",
+    marginBottom: "28px",
+    textAlign: "center",
   },
   formGroup: {
-    marginBottom: '20px',
+    marginBottom: "20px",
   },
   label: {
-    display: 'block',
-    fontSize: '13px',
-    color: '#374151',
-    fontWeight: '500',
-    marginBottom: '6px',
+    display: "block",
+    fontSize: "13px",
+    color: "#374151",
+    fontWeight: "500",
+    marginBottom: "6px",
   },
   input: {
-    width: '100%',
-    padding: '12px',
-    borderRadius: '10px',
-    border: '1px solid #e5e7eb',
-    fontSize: '14px',
-    boxSizing: 'border-box',
-    backgroundColor: '#f9fafb',
+    width: "100%",
+    padding: "12px",
+    borderRadius: "10px",
+    border: "1px solid #e5e7eb",
+    fontSize: "14px",
+    boxSizing: "border-box",
+    backgroundColor: "#f9fafb",
   },
   loginButton: {
-    width: '100%',
-    backgroundColor: '#10b981',
-    color: 'white',
-    padding: '14px',
-    borderRadius: '12px',
-    border: 'none',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    marginTop: '8px',
+    width: "100%",
+    backgroundColor: "#10b981",
+    color: "white",
+    padding: "14px",
+    borderRadius: "12px",
+    border: "none",
+    fontSize: "16px",
+    fontWeight: "600",
+    cursor: "pointer",
+    marginTop: "8px",
   },
   version: {
-    textAlign: 'center',
-    marginTop: '30px',
-    fontSize: '12px',
-    color: '#9ca3af',
+    textAlign: "center",
+    marginTop: "30px",
+    fontSize: "12px",
+    color: "#9ca3af",
   },
 };

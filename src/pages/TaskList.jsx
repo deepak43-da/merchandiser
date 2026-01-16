@@ -22,16 +22,18 @@ export default function TaskList() {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      // const response = await axios.post(
-      //   "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailySchedule_Get",
-      //   { StoreID: Number(id) },
-      //   { headers: { "Content-Type": "application/json" } }
-      // );
+      const response = await axios.post(
+        "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailySchedule_Get",
+        { StoreID: Number(id) },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-      setTasks(maindata);
+      // Use backend keys directly
+      setTasks(response.data.data || []);
     } catch (error) {
       console.error("API error:", error);
       alert("API error");
+      setTasks([]);
     } finally {
       setTimeout(() => setLoading(false), 500);
     }
@@ -164,14 +166,15 @@ export default function TaskList() {
     return false;
   };
 
-const auth = localStorage.getItem("auth");
+  const auth = localStorage.getItem("auth");
 
-useEffect(() => {
+  useEffect(() => {
     if (auth !== "true") {
-       localStorage.removeItem("auth");
-    localStorage.removeItem("id");
+      localStorage.removeItem("auth");
+      localStorage.removeItem("id");
       navigate("/");
-    }},[auth])
+    }
+  }, [auth]);
 
   const skeletonCount = 5;
 
@@ -223,12 +226,12 @@ useEffect(() => {
                       const url = `/task/${encodeURIComponent(
                         t.ActivityID
                       )}/${encodeURIComponent(t.StoreID)}/${encodeURIComponent(
-                        t.ID
-                      )}/${encodeURIComponent(t.Supplier)}/${encodeURIComponent(
-                        t.Activity
-                      )}/${encodeURIComponent(t.Duration)}/${encodeURIComponent(
-                        t.DOWork
-                      )}`;
+                        t.SupplierID
+                      )}/${encodeURIComponent(t.ID)}/${encodeURIComponent(
+                        t.Supplier
+                      )}/${encodeURIComponent(t.Activity)}/${encodeURIComponent(
+                        t.Duration
+                      )}/${encodeURIComponent(t.DOWork)}`;
                       navigate(url);
                     }
                   }}
@@ -247,6 +250,11 @@ useEffect(() => {
                     </span>
                   </div>
                   <div className="task-id">Hrs Book: {t.Duration} hrs</div>
+                  <div className="task-id">
+                    Display Completed: {t?.DisplayCount ?? 0}/
+                    {t?.DisplayOutOf ?? 0}
+                  </div>
+
                   <div className="task-info">
                     <div className="info-row">🕒 {t.TimeSlot}</div>
                   </div>

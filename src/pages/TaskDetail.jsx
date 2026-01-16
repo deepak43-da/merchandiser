@@ -1,3 +1,4 @@
+import DisplayListSection from "../components/DisplayListSection";
 //   useEffect(() => {
 //     dispatch({ type: "SET_CURRENT_TASK", payload: ActivityID });
 
@@ -877,6 +878,7 @@ export default function TaskDetail() {
     ActivityID,
     StoreID,
     ScheduleID,
+    SupplierID,
     Supplier,
     Activity,
     Duration,
@@ -996,11 +998,14 @@ export default function TaskDetail() {
 
       const formData = new FormData();
       formData.append("ScheduleID", ScheduleID);
+      formData.append("DOWork", DOWork);
       formData.append("StoreID", StoreID);
       formData.append("ActivityID", ActivityID);
       formData.append("Stage", stage);
-      // Pass DOWork as DTOImage if available
-      formData.append("DOWork", DOWork);
+      formData.append(
+        "DTOImage",
+        new Date().toISOString().replace("T", " ").substring(0, 19)
+      );
       formData.append("UserID", "1");
       formData.append("Image", file);
 
@@ -1040,15 +1045,15 @@ export default function TaskDetail() {
     }
   };
 
-
   const auth = localStorage.getItem("auth");
-  
+
   useEffect(() => {
-      if (auth !== "true") {
-         localStorage.removeItem("auth");
+    if (auth !== "true") {
+      localStorage.removeItem("auth");
       localStorage.removeItem("id");
-        navigate("/");
-      }},[auth])
+      navigate("/");
+    }
+  }, [auth]);
 
   const captureImage = async () => {
     const counts = getTotalImagesCount();
@@ -1200,6 +1205,35 @@ export default function TaskDetail() {
   }
   const counts = getTotalImagesCount();
 
+  // Fetch display list from API
+  const [displayList, setDisplayList] = useState([]);
+  const [loadingDisplayList, setLoadingDisplayList] = useState(false);
+
+  useEffect(() => {
+    const fetchDisplayList = async () => {
+      setLoadingDisplayList(true);
+      try {
+        const response = await axios.post(
+          "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
+          {
+            StoreID: Number(StoreID),
+            SupplierID: Number(SupplierID),
+            ScheduleID: Number(ScheduleID),
+            DOWork: DOWork,
+          },
+          { headers: { "Content-Type": "application/json" } }
+        );
+        setDisplayList(response.data.data || []);
+      } catch (error) {
+        setDisplayList([]);
+        console.error("Display list API error:", error);
+      } finally {
+        setLoadingDisplayList(false);
+      }
+    };
+    fetchDisplayList();
+  }, [StoreID, SupplierID, ScheduleID, DOWork]);
+
   return (
     <div style={styles.container}>
       {/* Header */}
@@ -1212,209 +1246,17 @@ export default function TaskDetail() {
         </h1>
       </div>
       <div style={styles.timeSection}>Hrs Book : {Duration} hrs </div>
-      {/* Tabs */}
-      <div style={styles.tabContainer}>
-        <button
-          style={activeTab === "during" ? styles.activeTab : styles.inactiveTab}
-          onClick={() => {
-            setActiveTab("during");
-            setIsCameraOpen(true);
-          }}
-        >
-          During Activity ({counts.during}/{DURING_LIMIT})
-        </button>
-        <button
-          style={activeTab === "post" ? styles.activeTab1 : styles.inactiveTab}
-          onClick={() => {
-            setActiveTab("post");
-            setIsCameraOpen(true);
-          }}
-        >
-          Post Activity ({counts.post}/{POST_LIMIT})
-        </button>
-      </div>
 
-      {/* Evidence Section */}
-      <div
-        style={
-          activeTab === "during"
-            ? styles.evidenceSection
-            : styles.evidenceSections
-        }
-      >
-        <div style={styles.sectionHeader}>
-          <h2 style={styles.sectionTitle}>Capture Evidence</h2>
-        </div>
-        {/* Image Limits Display */}
-        <div style={styles.limitsContainer}>
-          <div style={styles.limitItem}>
-            <span style={styles.limitLabel}>During Activity:</span>
-            <span
-              style={
-                counts.during >= DURING_LIMIT
-                  ? styles.limitReached
-                  : styles.limitCount
-              }
-            >
-              {counts.during}/{DURING_LIMIT}{" "}
-              {counts.during >= DURING_LIMIT && "✓"}
-            </span>
-          </div>
-          <div style={styles.limitItem}>
-            <span style={styles.limitLabel}>Post Activity:</span>
-            <span
-              style={
-                counts.post >= POST_LIMIT
-                  ? styles.limitReached
-                  : styles.limitCount
-              }
-            >
-              {counts.post}/{POST_LIMIT} {counts.post >= POST_LIMIT && "✓"}
-            </span>
-          </div>
-        </div>
-        {/* Camera Preview */}
-        <div style={styles.imagePreview}>
-          {isCameraOpen ? (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                transform: cameraType === "user" ? "scaleX(-1)" : "none",
-                WebkitTransform: cameraType === "user" ? "scaleX(-1)" : "none",
-              }}
-            />
-          ) : (
-            <div style={styles.cameraOffPlaceholder}>
-              <div style={styles.cameraOffIcon}>📷</div>
-              <p style={styles.cameraOffText}>Camera is off</p>
-            </div>
-          )}
-        </div>
-        {/* Camera toggle button removed */}
-        {/* Status Indicators */}
-        <div style={styles.statusContainer}>
-          {!isOnline && (
-            <div style={styles.offlineIndicator}>
-              ⚠️ You are offline. Images will sync automatically when back
-              online.
-            </div>
-          )}
-          {isUploading && (
-            <div style={styles.uploadingIndicator}>
-              ⬆️ Uploading image...{" "}
-              {uploadProgress && Object.values(uploadProgress)[0]}%
-            </div>
-          )}
-          {isLimitReached && (
-            <div style={styles.limitIndicator}>
-              ⛔ Limit reached for {activeTab} activity. Cannot capture more
-              images.
-            </div>
-          )}
-        </div>
-        {/* Compressing indicator */}
-        {isCompressing && (
-          <div style={styles.compressingOverlay}>
-            <div style={styles.compressingSpinner}></div>
-            <div style={styles.compressingText}>Processing image...</div>
-          </div>
-        )}
-        {/* Capture Button */}
-        {isCameraOpen && (
-          <button
-            style={{
-              ...styles.captureButton,
-              backgroundColor: isLimitReached ? "#9ca3af" : "#10b981",
-              opacity: isCompressing || isUploading || isLimitReached ? 0.7 : 1,
-            }}
-            onClick={captureImage}
-            disabled={isLimitReached || isCompressing || isUploading}
-          >
-            {isLimitReached
-              ? `Limit Reached (${currentImages.length}/${currentLimit})`
-              : isCompressing
-              ? "⏳ Processing..."
-              : isUploading
-              ? "⬆️ Uploading..."
-              : ` ${
-                  activeTab === "during"
-                    ? "During Activity Image"
-                    : "Post Activity Image"
-                } (${currentImages.length}/${currentLimit})`}
-          </button>
-        )}
-        {/* Offline Images List */}
-        {currentImages.length > 0 && (
-          <div style={styles.offlineImagesContainer}>
-            <div style={styles.offlineImagesGrid}>
-              {currentImages.map((image, index) => (
-                <div key={index} style={styles.offlineImageWrapper}>
-                  <img
-                    src={image.data}
-                    alt={`${activeTab} ${index + 1}`}
-                    style={styles.offlineImage}
-                  />
-                  <div style={styles.offlineImageInfo}>
-                    <span style={styles.imageIndex}>#{index + 1}</span>
-                    {image.uploaded && (
-                      <span style={styles.uploadedBadge}>✓</span>
-                    )}
-                    {uploadProgress[
-                      `${StoreID}-${ActivityID}-${activeTab}-${index}`
-                    ] && (
-                      <div style={styles.uploadProgress}>
-                        {
-                          uploadProgress[
-                            `${StoreID}-${ActivityID}-${activeTab}-${index}`
-                          ]
-                        }
-                        %
-                      </div>
-                    )}
-                  </div>
-                  {!image.uploaded && (
-                    <button
-                      style={styles.removeImageButton}
-                      onClick={() => removeOfflineImage(index)}
-                      title="Remove image"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Bottom Summary */}
-      <div style={styles.bottomSection}>
-        <div style={styles.taskSummary}>
-          <div style={styles.summaryItem}>
-            During: {counts.during}/{DURING_LIMIT}
-          </div>
-          <div style={styles.summaryItem}>
-            Post: {counts.post}/{POST_LIMIT}
-          </div>
-          <div style={styles.summaryItem}>Total: {counts.total}/25</div>
-        </div>
-
-        {!isOnline && (
-          <div style={styles.offlineNotice}>
-            <small>
-              Network: Offline • Images will sync automatically when back online
-            </small>
-          </div>
-        )}
-      </div>
-
-      <canvas ref={canvasRef} style={{ display: "none" }} />
+      {/* Display List Section */}
+      <DisplayListSection
+        ActivityID={ActivityID}
+        StoreID={StoreID}
+        ScheduleID={ScheduleID}
+        displayList={displayList}
+        loadingDisplayList={loadingDisplayList}
+        DOWork={DOWork}
+        SupplierID={SupplierID}
+      />
     </div>
   );
 }

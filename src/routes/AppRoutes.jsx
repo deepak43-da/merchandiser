@@ -11,7 +11,7 @@ export default function AppRoutes() {
       <Route path="/" element={<Login />} />
       <Route path="/tasks/:id" element={<TaskList />} />
       <Route
-        path="/task/:ActivityID/:StoreID/:SupplierID/:ScheduleID/:Supplier/:Activity/:Duration/:DOWork"
+        path="/task/:Store/:ActivityID/:StoreID/:SupplierID/:ScheduleID/:Supplier/:Activity/:Duration/:DOWork"
         element={<TaskDetail />}
       />
       <Route path="/admin/vendors" element={<AdminVendorList />} />

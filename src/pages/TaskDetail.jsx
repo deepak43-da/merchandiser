@@ -875,6 +875,7 @@ import axios from "axios";
 
 export default function TaskDetail() {
   const {
+    Store,
     ActivityID,
     StoreID,
     ScheduleID,
@@ -1236,17 +1237,115 @@ export default function TaskDetail() {
 
   return (
     <div style={styles.container}>
-      {/* Header */}
-      <div style={styles.header}>
-        <button style={styles.backButton} onClick={() => navigate(-1)}>
-          ←
-        </button>
-        <h1 style={styles.mainTitle}>
-          {Supplier} - {Activity}
-        </h1>
+      {/* Header (like TaskList) */}
+      <div
+        className="top-header fixed-header"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <span className="store-title">{Store || ""}</span>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            style={{
+              backgroundColor: "#10b981",
+              color: "white",
+              padding: "10px 18px",
+              borderRadius: "20px",
+              fontSize: "13px",
+              fontWeight: 500,
+              border: "none",
+              cursor: "pointer",
+            }}
+            onClick={() => window.location.reload()}
+          >
+            Reload
+          </button>
+          <button
+            style={{
+              backgroundColor: "rgb(228, 60, 60)",
+              color: "white",
+              padding: "10px 18px",
+              borderRadius: "20px",
+              fontSize: "13px",
+              fontWeight: 500,
+              border: "none",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              localStorage.removeItem("auth");
+              localStorage.removeItem("id");
+              window.location.href = "/";
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
-      <div style={styles.timeSection}>Hrs Book : {Duration} hrs </div>
-
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          margin: "24px 0 16px 0",
+        }}
+      >
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "14px",
+            boxShadow: "0 4px 16px rgba(34,197,94,0.10)",
+            padding: "16px 24px 12px 24px",
+            minWidth: "220px",
+            maxWidth: "340px",
+            textAlign: "center",
+            fontWeight: 600,
+            color: "#189918",
+            border: "1px solid #e5e7eb",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "17px",
+              fontWeight: 700,
+              color: "#189918",
+              marginBottom: "2px",
+              letterSpacing: "0.5px",
+            }}
+          >
+            {Supplier}
+          </div>
+          <div
+            style={{
+              fontSize: "15px",
+              fontWeight: 500,
+              color: "#374151",
+              marginBottom: "4px",
+            }}
+          >
+            {Activity}
+          </div>
+          <div
+            style={{
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "#10b981",
+              background: "#f3f4f6",
+              borderRadius: "8px",
+              padding: "6px 14px",
+              marginTop: "2px",
+              boxShadow: "0 1px 4px rgba(16,185,129,0.04)",
+            }}
+          >
+            Hrs Book: {Duration} hrs
+          </div>
+        </div>
+      </div>
       {/* Display List Section */}
       <DisplayListSection
         ActivityID={ActivityID}

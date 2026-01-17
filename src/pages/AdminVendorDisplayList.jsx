@@ -228,7 +228,7 @@ export default function AdminVendorDisplayList() {
               >
                 <div
                   style={{
-                    width: 150,
+                    width: 130,
                     height: 120,
                     borderRadius: 8,
                     background: "#f3f4f6",
@@ -237,32 +237,7 @@ export default function AdminVendorDisplayList() {
                       "skeleton-loading 1.2s infinite linear alternate",
                   }}
                 />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    background: "#fff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: "50%",
-                      background: "#f3f4f6",
-                      animation:
-                        "skeleton-loading 1.2s infinite linear alternate",
-                    }}
-                  />
-                </div>
+              
               </div>
             ))}
             <style>{`

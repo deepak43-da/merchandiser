@@ -181,11 +181,47 @@ export default function TaskList() {
   return (
     <div className="mobile-wrapper fixed-layout">
       {/* HEADER */}
-      <div className="top-header fixed-header">
+      <div
+        className="top-header fixed-header"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <span className="store-title">{tasks?.[0]?.Store || ""}</span>
-        <span className="logout" onClick={handleLogout}>
-          Logout
-        </span>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            style={{
+              backgroundColor: "#10b981",
+              color: "white",
+              padding: "10px 18px",
+              borderRadius: "20px",
+              fontSize: "13px",
+              fontWeight: 500,
+              border: "none",
+              cursor: "pointer",
+            }}
+            onClick={fetchTasks}
+          >
+            Reload
+          </button>
+          <button
+            style={{
+              backgroundColor: "rgb(228, 60, 60)",
+              color: "white",
+              padding: "10px 18px",
+              borderRadius: "20px",
+              fontSize: "13px",
+              fontWeight: 500,
+              border: "none",
+              cursor: "pointer",
+            }}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="scrollable-tasks">
@@ -222,8 +258,10 @@ export default function TaskList() {
                   }}
                   key={t.ActivityID}
                   onClick={() => {
-                    if (active) {
+                    if (!active) {
                       const url = `/task/${encodeURIComponent(
+                        t?.Store 
+                      )}/${encodeURIComponent(
                         t.ActivityID
                       )}/${encodeURIComponent(t.StoreID)}/${encodeURIComponent(
                         t.SupplierID
@@ -235,7 +273,7 @@ export default function TaskList() {
                       navigate(url);
                     }
                   }}
-                  className={`task-card ${active ? "active" : "inactive"}`}
+                  // className={`task-card ${active ? "active" : "inactive"}`}
                 >
                   <div className="task-row">
                     <span className="task-title">

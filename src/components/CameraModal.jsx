@@ -33,9 +33,12 @@ export default function CameraModal({
 
   const handleCapture = () => {
     const canvas = document.createElement("canvas");
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    canvas.getContext("2d").drawImage(videoRef.current, 0, 0);
+    // Use camera's natural resolution for high quality
+    const width = videoRef.current.videoWidth;
+    const height = videoRef.current.videoHeight;
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext("2d").drawImage(videoRef.current, 0, 0, width, height);
     const image = canvas.toDataURL("image/png");
     onCapture(image);
   };
@@ -123,13 +126,16 @@ export default function CameraModal({
               ref={videoRef}
               autoPlay
               style={{
-                width: 300,
+                width: "100%",
+
                 height: 220,
                 borderRadius: 10,
                 background: "#f3f4f6",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                objectFit: "contain",
               }}
             />
+
             <button
               onClick={handleCapture}
               style={{
@@ -165,7 +171,7 @@ export default function CameraModal({
               src={capturedImage}
               alt="Captured"
               style={{
-                width: 300,
+                width: 164,
                 height: 220,
                 borderRadius: 10,
                 background: "#f3f4f6",

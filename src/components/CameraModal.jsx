@@ -9,6 +9,7 @@ export default function CameraModal({
   capturedImage,
   heading,
   onClose,
+  confirmLoading = false,
 }) {
   const videoRef = useRef(null);
   const [stream, setStream] = useState(null);
@@ -211,23 +212,53 @@ export default function CameraModal({
                 style={{
                   padding: "10px 32px",
                   borderRadius: 20,
-                  background: "#10b981",
+                  background: confirmLoading ? "#059669" : "#10b981",
                   color: "#fff",
                   border: "none",
                   fontWeight: 600,
                   fontSize: 16,
                   boxShadow: "0 2px 8px rgba(16,185,129,0.08)",
-                  cursor: "pointer",
+                  cursor: confirmLoading ? "not-allowed" : "pointer",
+                  opacity: confirmLoading ? 0.7 : 1,
                   transition: "background 0.2s",
+                  position: "relative",
                 }}
-                onMouseOver={(e) =>
-                  (e.currentTarget.style.background = "#059669")
-                }
-                onMouseOut={(e) =>
-                  (e.currentTarget.style.background = "#10b981")
-                }
+                disabled={confirmLoading}
+                onMouseOver={(e) => {
+                  if (!confirmLoading)
+                    e.currentTarget.style.background = "#059669";
+                }}
+                onMouseOut={(e) => {
+                  if (!confirmLoading)
+                    e.currentTarget.style.background = "#10b981";
+                }}
               >
-                Confirm
+                {confirmLoading ? (
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 18,
+                        height: 18,
+                        border: "2.5px solid #fff",
+                        borderTop: "2.5px solid #10b981",
+                        borderRadius: "50%",
+                        display: "inline-block",
+                        marginRight: 8,
+                        animation: "spin 1s linear infinite",
+                      }}
+                    />
+                    Loading...
+                    <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                  </span>
+                ) : (
+                  "Confirm"
+                )}
               </button>
             </div>
           </div>

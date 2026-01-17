@@ -258,9 +258,9 @@ export default function TaskList() {
                   }}
                   key={t.ActivityID}
                   onClick={() => {
-                    if (!active) {
+                    if (active) {
                       const url = `/task/${encodeURIComponent(
-                        t?.Store 
+                        t?.Store
                       )}/${encodeURIComponent(
                         t.ActivityID
                       )}/${encodeURIComponent(t.StoreID)}/${encodeURIComponent(
@@ -273,7 +273,7 @@ export default function TaskList() {
                       navigate(url);
                     }
                   }}
-                  // className={`task-card ${active ? "active" : "inactive"}`}
+                  className={`task-card ${active ? "active" : "inactive"}`}
                 >
                   <div className="task-row">
                     <span className="task-title">

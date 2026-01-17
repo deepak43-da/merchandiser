@@ -22,9 +22,11 @@ export default function AdminVendorDisplayList() {
   const [deleteId, setDeleteId] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const fetchDisplayList = async () => {
-    setLoading(true);
+  // Accept skipLoading param to avoid skeleton on delete
+  const fetchDisplayList = async (skipLoading = false) => {
+    if (!skipLoading) setLoading(true);
     try {
       // StoreID from localStorage, SupplierID from params (id)
       const StoreID = localStorage.getItem("StoreID");
@@ -41,7 +43,7 @@ export default function AdminVendorDisplayList() {
     } catch (err) {
       alert("Failed to fetch display list");
     } finally {
-      setLoading(false);
+      if (!skipLoading) setLoading(false);
     }
   };
 
@@ -82,7 +84,7 @@ export default function AdminVendorDisplayList() {
         "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DeactivateDisplay",
         { DisplayID: deleteId }
       );
-      fetchDisplayList();
+      fetchDisplayList(true); // skip skeleton loading on delete
     } catch (err) {
       alert("Delete failed");
     }
@@ -111,11 +113,13 @@ export default function AdminVendorDisplayList() {
   };
 
   const handleConfirmCapture = async () => {
-    setShowCamera(false);
+    setConfirmLoading(true);
     if (!navigator.onLine) {
       await saveImageOffline2(id, capturedImage);
       alert("No internet. Image saved offline.");
       setCapturedImage(null);
+      setConfirmLoading(false);
+      setShowCamera(false);
       fetchOfflineImages();
       return;
     }
@@ -151,11 +155,13 @@ export default function AdminVendorDisplayList() {
           },
         }
       );
+      setShowCamera(false);
       fetchDisplayList();
     } catch (err) {
       alert("Add image failed");
     }
     setCapturedImage(null);
+    setConfirmLoading(false);
     fetchOfflineImages();
   };
 
@@ -237,7 +243,6 @@ export default function AdminVendorDisplayList() {
                       "skeleton-loading 1.2s infinite linear alternate",
                   }}
                 />
-              
               </div>
             ))}
             <style>{`
@@ -408,6 +413,7 @@ export default function AdminVendorDisplayList() {
             setShowCamera(false);
             setCapturedImage(null);
           }}
+          confirmLoading={confirmLoading}
         />
       )}
     </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import axios from "axios";
@@ -37,12 +38,13 @@ export default function AdminVendorList() {
     fetchVendors();
   }, []);
 
-    const skeletonCount = 5;
+  const skeletonCount = 5;
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("id");
     localStorage.removeItem("maindata");
+    toast.error("Logout successful!");
     navigate("/");
   };
 
@@ -89,16 +91,14 @@ export default function AdminVendorList() {
       <div className="scrollable-tasks">
         <h3 className="page-title">Vendor List</h3>
         {loading ? (
-           Array.from({ length: skeletonCount }).map((_, index) => (
-                      <div key={index} className="task-card">
-                        <Stack spacing={1}>
-                          <Skeleton variant="text" width="60%" height={24} />
-                          <Skeleton variant="rectangular" width="100%" height={16} />
-                         
-                        
-                        </Stack>
-                      </div>
-                    ))
+          Array.from({ length: skeletonCount }).map((_, index) => (
+            <div key={index} className="task-card">
+              <Stack spacing={1}>
+                <Skeleton variant="text" width="60%" height={24} />
+                <Skeleton variant="rectangular" width="100%" height={16} />
+              </Stack>
+            </div>
+          ))
         ) : vendors.length === 0 ? (
           <div className="no-tasks">No vendors found</div>
         ) : (

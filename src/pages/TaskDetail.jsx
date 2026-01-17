@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 // import DisplayListSection from "../components/DisplayListSection";
 // //   useEffect(() => {
 // //     dispatch({ type: "SET_CURRENT_TASK", payload: ActivityID });
@@ -1745,7 +1746,6 @@
 //   },
 // };
 
-
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
@@ -1834,16 +1834,16 @@ export default function TaskDetail() {
       setHasCameraPermission(false);
       setIsCameraOpen(false);
       setCameraError("Failed to access back camera");
-      
+
       // Try any camera as fallback
       try {
-        const fallbackStream = await navigator.mediaDevices.getUserMedia({ 
-          video: true 
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
         });
         streamRef.current = fallbackStream;
         setHasCameraPermission(true);
         setCameraError("Using fallback camera (back camera not available)");
-        
+
         if (videoRef.current) {
           videoRef.current.srcObject = fallbackStream;
         }
@@ -2121,7 +2121,7 @@ export default function TaskDetail() {
   const [displayList, setDisplayList] = useState([]);
   const [loadingDisplayList, setLoadingDisplayList] = useState(false);
 
-  console.log(displayList,"displayList")
+  console.log(displayList, "displayList");
   useEffect(() => {
     const fetchDisplayList = async () => {
       setLoadingDisplayList(true);
@@ -2189,7 +2189,8 @@ export default function TaskDetail() {
             onClick={() => {
               localStorage.removeItem("auth");
               localStorage.removeItem("id");
-              window.location.href = "/";
+              toast.error("Logout successful!");
+            navigate("/");
             }}
           >
             Logout

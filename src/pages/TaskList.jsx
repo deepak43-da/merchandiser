@@ -6,6 +6,7 @@ import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import "./taskList.css";
 import { persistor } from "../redux/store";
+import { toast } from "react-toastify";
 
 export default function TaskList() {
   const { id } = useParams();
@@ -47,7 +48,7 @@ export default function TaskList() {
     localStorage.removeItem("id");
     // Note: We keep 'maindata' to avoid unnecessary API calls
     // localStorage.removeItem('maindata');
-
+    toast.error("Logout successful!");
     // Navigate to login
     navigate("/");
   };

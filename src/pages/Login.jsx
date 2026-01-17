@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 // // import React, { useState } from "react";
 // // import { useDispatch, useSelector } from "react-redux";
 
@@ -10,11 +11,11 @@
 
 // //   const handleLogin = () => {
 // //     if (!email || !password) return;
-
 // //     dispatch({
 // //       type: "LOGIN_REQUEST",
 // //       payload: { email, password },
 // //     });
+// //     toast.success("Login successful!");
 // //   };
 
 // //   return (
@@ -412,6 +413,9 @@ export default function Login() {
       localStorage.setItem("StoreID", loginData.StoreID);
       localStorage.setItem("maindata", JSON.stringify(loginData));
 
+      // Show login success toast
+      toast.success("Login successful!");
+
       // Navigation logic
       if (loginData.Type === "Admin") {
         navigate("/admin/vendors");
@@ -498,12 +502,10 @@ export default function Login() {
     if (isAuth === "true" && Number(id) !== 0) {
       // Check cleanup on app start as well
       checkAndPerformCleanup();
-      if (type === "Admin"){
-      navigate(`/admin/vendors`);
-
-      }else{
-      navigate(`/tasks/${id}`);
-
+      if (type === "Admin") {
+        navigate(`/admin/vendors`);
+      } else {
+        navigate(`/tasks/${id}`);
       }
     }
   }, [isAuth, id, navigate]);

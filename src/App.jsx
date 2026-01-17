@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
 import AppRoutes from "./routes/AppRoutes";
+import ToasterProvider from "./ToasterProvider";
 import React, { useEffect } from "react";
 
 export default function App() {
@@ -91,5 +92,10 @@ export default function App() {
     };
   }, []);
 
-  return <AppRoutes />;
+  return (
+    <>
+      <ToasterProvider />
+      <AppRoutes />
+    </>
+  );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { MdDelete } from "react-icons/md";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal";
@@ -8,11 +9,14 @@ import CameraModal from "../components/CameraModal";
 import localForage from "localforage";
 
 export default function AdminVendorDisplayList() {
+
+  const navigate = useNavigate()
   const handleLogout = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("id");
     localStorage.removeItem("maindata");
-    window.location.href = "/";
+    toast.error("Logout successful!");
+  navigate("/");
   };
   const { id } = useParams();
   const [displayList, setDisplayList] = useState([]);

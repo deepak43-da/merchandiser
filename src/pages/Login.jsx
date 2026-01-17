@@ -491,13 +491,20 @@ export default function Login() {
   // };
 
   const isAuth = localStorage.getItem("auth");
-  const id = localStorage.getItem("id");
+  const id = localStorage.getItem("StoreID");
+  const type = localStorage.getItem("Type");
 
   useEffect(() => {
     if (isAuth === "true" && Number(id) !== 0) {
       // Check cleanup on app start as well
       checkAndPerformCleanup();
+      if (type === "Admin"){
+      navigate(`/admin/vendors`);
+
+      }else{
       navigate(`/tasks/${id}`);
+
+      }
     }
   }, [isAuth, id, navigate]);
 

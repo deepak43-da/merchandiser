@@ -2136,7 +2136,6 @@ export default function TaskDetail() {
           },
           { headers: { "Content-Type": "application/json" } }
         );
-        debugger
         setDisplayList(response.data.data || []);
       } catch (error) {
         setDisplayList([]);

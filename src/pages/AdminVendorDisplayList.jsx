@@ -81,7 +81,6 @@ export default function AdminVendorDisplayList() {
   }, [id]);
 
   const handleDelete = async () => {
-    debugger;
     setShowConfirm(false);
     if (!deleteId) return;
     try {

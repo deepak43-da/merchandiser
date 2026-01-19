@@ -2158,7 +2158,9 @@ export default function TaskDetail() {
           alignItems: "center",
         }}
       >
-        <span className="store-title">{Store || ""}</span>
+        <span className="store-title">
+          {localStorage.getItem("StoreName") || Store || ""}
+        </span>
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             style={{
@@ -2190,7 +2192,7 @@ export default function TaskDetail() {
               localStorage.removeItem("auth");
               localStorage.removeItem("id");
               toast.error("Logout successful!");
-            navigate("/");
+              navigate("/");
             }}
           >
             Logout

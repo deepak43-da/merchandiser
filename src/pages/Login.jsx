@@ -342,6 +342,7 @@ import { toast } from "react-toastify";
 // }
 
 import React, { useEffect, useState } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../components/ButtonComponent";
 import { useNavigate } from "react-router-dom";
@@ -354,6 +355,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Check for 24-hour cleanup on login
   const checkAndPerformCleanup = () => {
@@ -412,7 +414,7 @@ export default function Login() {
       localStorage.setItem("Type", loginData.Type);
       localStorage.setItem("StoreID", loginData.StoreID);
       localStorage.setItem("maindata", JSON.stringify(loginData));
-
+      localStorage.setItem("StoreName", loginData.Store);
       // Show login success toast
       toast.success("Login successful!");
 
@@ -529,13 +531,33 @@ export default function Login() {
 
         <div style={styles.formGroup}>
           <label style={styles.label}>Password</label>
-          <input
-            style={styles.input}
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div style={{ position: "relative" }}>
+            <input
+              style={styles.input}
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <span
+              onClick={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                right: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                fontSize: "22px",
+                color: "#6b7280",
+                userSelect: "none",
+                display: "flex",
+                alignItems: "center",
+              }}
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </span>
+          </div>
         </div>
 
         {/* <Button

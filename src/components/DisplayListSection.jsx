@@ -88,7 +88,7 @@
 //         setCapturedImage(null);
 //         // Refresh display list after uploading 'after' image
 //         try {
-         
+
 //           const response = await fetch(
 //             "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
 //             {
@@ -174,7 +174,7 @@
 //           Reload
 //         </button> */}
 //       </div>
-    
+
 //       {/* Show camera step if active */}
 //       {cameraStep ? (
 //         <div
@@ -388,7 +388,7 @@ const DisplayListSection = ({
   };
 
   console.log(cameraStep, "cameraStep");
-  
+
   const handleConfirmCapture = async () => {
     setLoading(true);
     try {
@@ -398,13 +398,17 @@ const DisplayListSection = ({
       formData.append("DOWork", DOWork);
       formData.append("StoreID", StoreID);
       formData.append("DisplayID", cameraStep.displayId);
-      formData.append("Stage", cameraStep.stage);
+      // Ensure stage is capitalized (e.g., 'After', 'Before')
+      const stageFormatted =
+        cameraStep.stage.charAt(0).toUpperCase() +
+        cameraStep.stage.slice(1).toLowerCase();
+      formData.append("Stage", stageFormatted);
       formData.append(
         "DTOImage",
         new Date().toISOString().replace("T", " ").substring(0, 19)
       );
       formData.append("UserID", "1");
-      
+
       // Convert base64 to Blob if needed
       let imageFile = capturedImage;
       if (
@@ -424,7 +428,7 @@ const DisplayListSection = ({
         });
       }
       formData.append("Image", imageFile);
-      
+
       const response = await fetch(
         "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/ScheduleWorkImageUpload",
         {
@@ -432,9 +436,9 @@ const DisplayListSection = ({
           body: formData,
         }
       );
-      
+
       if (!response.ok) throw new Error("Image upload failed");
-      
+
       // On success, start after image flow
       if (cameraStep.stage === "before") {
         setCameraStep({ displayId: cameraStep.displayId, stage: "after" });
@@ -442,7 +446,7 @@ const DisplayListSection = ({
       } else {
         setCameraStep(null);
         setCapturedImage(null);
-        
+
         // Refresh display list after uploading 'after' image
         try {
           const response = await fetch(
@@ -458,7 +462,7 @@ const DisplayListSection = ({
               }),
             }
           );
-          
+
           const data = await response.json();
           if (data && data.data) {
             if (typeof setDisplayList === "function") {
@@ -471,7 +475,7 @@ const DisplayListSection = ({
       }
     } catch (err) {
       console.error("Upload error:", err);
-      
+
       // Save image offline if upload fails
       try {
         await saveImageOffline({
@@ -484,10 +488,12 @@ const DisplayListSection = ({
           userId: "1",
           dowork: DOWork,
         });
-        
-        alert("Upload failed. Image saved offline and will sync when back online.");
+
+        alert(
+          "Upload failed. Image saved offline and will sync when back online."
+        );
         fetchOfflineImages(); // Refresh offline images list
-        
+
         // If this was a before image, still go to after image
         if (cameraStep.stage === "before") {
           setCameraStep({ displayId: cameraStep.displayId, stage: "after" });
@@ -510,12 +516,12 @@ const DisplayListSection = ({
     try {
       // Find the offline image
       const offlineImages = await getOfflineImages();
-      const imageToUpload = offlineImages.find(img => img.id === imageId);
-      
+      const imageToUpload = offlineImages.find((img) => img.id === imageId);
+
       if (!imageToUpload) {
         throw new Error("Image not found");
       }
-      
+
       // Upload the image
       const formData = new FormData();
       formData.append("ScheduleID", ScheduleID);
@@ -525,7 +531,7 @@ const DisplayListSection = ({
       formData.append("Stage", imageToUpload.stage);
       formData.append("DTOImage", imageToUpload.dtoImage);
       formData.append("UserID", imageToUpload.userId);
-      
+
       // Convert base64 to File
       const arr = imageToUpload.imageData.split(",");
       const mime = arr[0].match(/:(.*?);/)[1];
@@ -534,9 +540,11 @@ const DisplayListSection = ({
       for (let i = 0; i < bstr.length; i++) {
         u8arr[i] = bstr.charCodeAt(i);
       }
-      const imageFile = new File([u8arr], `offline_image_${imageId}.jpg`, { type: mime });
+      const imageFile = new File([u8arr], `offline_image_${imageId}.jpg`, {
+        type: mime,
+      });
       formData.append("Image", imageFile);
-      
+
       const response = await fetch(
         "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/ScheduleWorkImageUpload",
         {
@@ -544,13 +552,13 @@ const DisplayListSection = ({
           body: formData,
         }
       );
-      
+
       if (!response.ok) throw new Error("Upload failed");
-      
+
       // Remove from offline storage on success
       await removeOfflineImage(imageId);
       await fetchOfflineImages();
-      
+
       // Refresh display list
       const refreshResponse = await fetch(
         "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
@@ -565,12 +573,11 @@ const DisplayListSection = ({
           }),
         }
       );
-      
+
       const data = await refreshResponse.json();
       if (data && data.data && typeof setDisplayList === "function") {
         setDisplayList(data.data);
       }
-      
     } catch (error) {
       console.error("Retry upload failed:", error);
       alert("Failed to upload offline image. Please try again.");
@@ -589,8 +596,10 @@ const DisplayListSection = ({
           marginBottom: 16,
         }}
       >
-        <h2 style={{ fontWeight: 700, fontSize: 18, color: "#111827" }}>Work List</h2>
-        
+        <h2 style={{ fontWeight: 700, fontSize: 18, color: "#111827" }}>
+          Work List
+        </h2>
+
         {/* Manual refresh button for offline images sync */}
         {offlineImages.length > 0 && (
           <button
@@ -609,7 +618,7 @@ const DisplayListSection = ({
                 setLoading(true);
                 await uploadOfflineImages(ScheduleID, StoreID, DOWork);
                 await fetchOfflineImages();
-                
+
                 // Refresh display list
                 const response = await fetch(
                   "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
@@ -624,7 +633,7 @@ const DisplayListSection = ({
                     }),
                   }
                 );
-                
+
                 const data = await response.json();
                 if (data && data.data && typeof setDisplayList === "function") {
                   setDisplayList(data.data);
@@ -641,7 +650,7 @@ const DisplayListSection = ({
           </button>
         )}
       </div>
-      
+
       {/* Show camera step if active */}
       {cameraStep ? (
         <div
@@ -662,24 +671,28 @@ const DisplayListSection = ({
           />
         </div>
       ) : null}
-      
+
       {/* Offline images (pending uploads) */}
       {!cameraStep && offlineImages.length > 0 && (
-        <div style={{ 
-          marginBottom: 24, 
-          padding: "16px",
-          backgroundColor: "#fefce8",
-          borderRadius: 12,
-          border: "1px solid #fde047"
-        }}>
-          <div style={{ 
-            fontWeight: 600, 
-            color: "#854d0e", 
-            marginBottom: 12,
-            display: "flex",
-            alignItems: "center",
-            gap: 8
-          }}>
+        <div
+          style={{
+            marginBottom: 24,
+            padding: "16px",
+            backgroundColor: "#fefce8",
+            borderRadius: 12,
+            border: "1px solid #fde047",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 600,
+              color: "#854d0e",
+              marginBottom: 12,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
             <span style={{ fontSize: 18 }}>📤</span>
             <span>Pending Uploads ({offlineImages.length} offline)</span>
           </div>
@@ -707,7 +720,9 @@ const DisplayListSection = ({
                     marginBottom: 8,
                   }}
                 />
-                <div style={{ fontSize: 12, color: "#854d0e", marginBottom: 4 }}>
+                <div
+                  style={{ fontSize: 12, color: "#854d0e", marginBottom: 4 }}
+                >
                   {img.stage === "before" ? "Before" : "After"} Image
                 </div>
                 <div style={{ fontSize: 10, color: "#666", marginBottom: 8 }}>
@@ -756,7 +771,7 @@ const DisplayListSection = ({
           </div>
         </div>
       )}
-      
+
       {/* Show 'Data not available' only if not loading and list is empty */}
       {!cameraStep &&
         !loading &&
@@ -777,24 +792,28 @@ const DisplayListSection = ({
             No work items available
           </div>
         )}
-      
+
       {/* Online display list */}
       {!cameraStep &&
         (loadingDisplayList ? (
-          <div style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 40,
-          }}>
-            <div style={{
-              width: 40,
-              height: 40,
-              border: "3px solid #f3f3f3",
-              borderTop: "3px solid #10b981",
-              borderRadius: "50%",
-              animation: "spin 1s linear infinite",
-            }} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 40,
+            }}
+          >
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                border: "3px solid #f3f3f3",
+                borderTop: "3px solid #10b981",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }}
+            />
             <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
           </div>
         ) : (
@@ -810,7 +829,9 @@ const DisplayListSection = ({
               <div
                 key={item.ID}
                 style={{
-                  border: `2px solid ${item.Completed === "Yes" ? "#10b981" : "#eab308"}`,
+                  border: `2px solid ${
+                    item.Completed === "Yes" ? "#10b981" : "#eab308"
+                  }`,
                   padding: 16,
                   borderRadius: 12,
                   background: "#fff",
@@ -840,13 +861,15 @@ const DisplayListSection = ({
                 onMouseOver={(e) => {
                   if (item.Completed === "No") {
                     e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.12)";
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 12px rgba(0,0,0,0.12)";
                   }
                 }}
                 onMouseOut={(e) => {
                   if (item.Completed === "No") {
                     e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+                    e.currentTarget.style.boxShadow =
+                      "0 2px 8px rgba(0,0,0,0.08)";
                   }
                 }}
               >
@@ -861,39 +884,51 @@ const DisplayListSection = ({
                     marginBottom: 12,
                   }}
                 />
-                <div style={{ 
-                  fontSize: 14, 
-                  fontWeight: 500,
-                  marginBottom: 4,
-                  color: "#374151"
-                }}>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    marginBottom: 4,
+                    color: "#374151",
+                  }}
+                >
                   Display #{item.DisplayID}
                 </div>
-                <div style={{ 
-                  fontSize: 13,
-                  color: item.Completed === "No" ? "#eab308" : "#10b981",
-                  fontWeight: 600,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6
-                }}>
-                  <span style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    backgroundColor: item.Completed === "No" ? "#eab308" : "#10b981"
-                  }} />
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: item.Completed === "No" ? "#eab308" : "#10b981",
+                    fontWeight: 600,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      backgroundColor:
+                        item.Completed === "No" ? "#eab308" : "#10b981",
+                    }}
+                  />
                   Status: {item.Completed === "No" ? "Pending" : "Completed"}
                 </div>
                 {item.Completed === "No" && (
-                  <div style={{
-                    fontSize: 12,
-                    color: "#6b7280",
-                    marginTop: 8,
-                    textAlign: "center",
-                    fontStyle: "italic"
-                  }}>
-                    Click to {item.BeforeImageURL ? "add After image" : "add Before image"}
+                  <div
+                    style={{
+                      fontSize: 12,
+                      color: "#6b7280",
+                      marginTop: 8,
+                      textAlign: "center",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    Click to{" "}
+                    {item.BeforeImageURL
+                      ? "add After image"
+                      : "add Before image"}
                   </div>
                 )}
               </div>

@@ -190,7 +190,9 @@ export default function TaskList() {
           alignItems: "center",
         }}
       >
-        <span className="store-title">{tasks?.[0]?.Store || ""}</span>
+        <span className="store-title">
+          {localStorage.getItem("StoreName") || tasks?.[0]?.Store || ""}
+        </span>
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             style={{
@@ -259,7 +261,7 @@ export default function TaskList() {
                   }}
                   key={t.ActivityID}
                   onClick={() => {
-                    if (active) {
+                    if (!active) {
                       const url = `/task/${encodeURIComponent(
                         t?.Store
                       )}/${encodeURIComponent(
@@ -274,7 +276,7 @@ export default function TaskList() {
                       navigate(url);
                     }
                   }}
-                  className={`task-card ${active ? "active" : "inactive"}`}
+                  // className={`task-card ${active ? "active" : "inactive"}`}
                 >
                   <div className="task-row">
                     <span className="task-title">
@@ -290,8 +292,8 @@ export default function TaskList() {
                   </div>
                   <div className="task-id">Hrs Book: {t.Duration} hrs</div>
                   <div className="task-id">
-                    Display Completed: {t?.DisplayCount ?? 0}/
-                    {t?.DisplayOutOf ?? 0}
+                    Display Completed: {t?.Completed ?? 0}/
+                    {t?.DisplayCount ?? 0}
                   </div>
 
                   <div className="task-info">

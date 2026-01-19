@@ -48,10 +48,11 @@ export default function AdminVendorList() {
     navigate("/");
   };
 
+  const storeName = localStorage.getItem("StoreName") || "Admin Panel";
   return (
     <div className="mobile-wrapper fixed-layout">
       <div className="top-header fixed-header">
-        <span className="store-title">Admin Panel</span>
+        <span className="store-title">{storeName}</span>
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             className="logout"

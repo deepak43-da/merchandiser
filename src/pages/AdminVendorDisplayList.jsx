@@ -9,14 +9,13 @@ import CameraModal from "../components/CameraModal";
 import localForage from "localforage";
 
 export default function AdminVendorDisplayList() {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("id");
     localStorage.removeItem("maindata");
     toast.error("Logout successful!");
-  navigate("/");
+    navigate("/");
   };
   const { id } = useParams();
   const [displayList, setDisplayList] = useState([]);
@@ -27,6 +26,7 @@ export default function AdminVendorDisplayList() {
   const [showCamera, setShowCamera] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const UserID = localStorage.getItem("UserID");
 
   // Accept skipLoading param to avoid skeleton on delete
   const fetchDisplayList = async (skipLoading = false) => {
@@ -81,12 +81,16 @@ export default function AdminVendorDisplayList() {
   }, [id]);
 
   const handleDelete = async () => {
+    debugger;
     setShowConfirm(false);
     if (!deleteId) return;
     try {
       await axios.post(
         "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DeactivateDisplay",
-        { DisplayID: deleteId }
+        {
+          DisplayID: deleteId,
+          UserID: UserID,
+        }
       );
       fetchDisplayList(true); // skip skeleton loading on delete
     } catch (err) {
@@ -172,7 +176,9 @@ export default function AdminVendorDisplayList() {
   return (
     <div className="mobile-wrapper fixed-layout">
       <div className="top-header fixed-header">
-        <span className="store-title">Vendor Display List</span>
+        <span className="store-title">
+          {localStorage.getItem("StoreName") || "Vendor Display List"}
+        </span>
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             className="logout"

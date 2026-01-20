@@ -356,7 +356,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+console.log(showPassword,"showPassword")
   // Check for 24-hour cleanup on login
   const checkAndPerformCleanup = () => {
     const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
@@ -544,7 +544,7 @@ export default function Login() {
               style={{
                 position: "absolute",
                 right: "12px",
-                top: "50%",
+                top: "45%",
                 transform: "translateY(-50%)",
                 cursor: "pointer",
                 fontSize: "22px",

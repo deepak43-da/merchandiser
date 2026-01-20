@@ -1,66 +1,4 @@
 import { toast } from "react-toastify";
-// // import React, { useState } from "react";
-// // import { useDispatch, useSelector } from "react-redux";
-
-// // export default function Login() {
-// //   const dispatch = useDispatch();
-// //   const loading = useSelector((state) => state.auth.loading);
-
-// //   const [email, setEmail] = useState("");
-// //   const [password, setPassword] = useState("");
-
-// //   const handleLogin = () => {
-// //     if (!email || !password) return;
-// //     dispatch({
-// //       type: "LOGIN_REQUEST",
-// //       payload: { email, password },
-// //     });
-// //     toast.success("Login successful!");
-// //   };
-
-// //   return (
-// //     <div className="login-container">
-// //       <div className="login-card">
-// //         {/* App Icon */}
-// //         <div className="app-icon">
-// //           🛍️
-// //         </div>
-
-// //         <h2>Welcome Back</h2>
-// //         <p className="subtitle">Please sign in to continue</p>
-
-// //         <div className="field">
-// //           <label>Email Address</label>
-// //           <input
-// //             type="email"
-// //             placeholder="alex@store.com"
-// //             value={email}
-// //             onChange={(e) => setEmail(e.target.value)}
-// //           />
-// //         </div>
-
-// //         <div className="field">
-// //           <label>Password</label>
-// //           <input
-// //             type="password"
-// //             placeholder="••••••••"
-// //             value={password}
-// //             onChange={(e) => setPassword(e.target.value)}
-// //           />
-// //         </div>
-
-// //         <button
-// //           className="primary-btn"
-// //           onClick={handleLogin}
-// //           disabled={loading}
-// //         >
-// //           {loading ? "Logging in..." : "Login"}
-// //         </button>
-
-// //       </div>
-// //     </div>
-// //   );navigate
-// // }
 
 // import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
@@ -341,23 +279,22 @@ import { toast } from "react-toastify";
 //   );navigate
 // }
 
+
+
 import React, { useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { useDispatch, useSelector } from "react-redux";
 import Button from "../components/ButtonComponent";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Login() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-console.log(showPassword,"showPassword")
-  // Check for 24-hour cleanup on login
+  console.log(showPassword, "showPassword");
   const checkAndPerformCleanup = () => {
     const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
     const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
@@ -365,9 +302,6 @@ console.log(showPassword,"showPassword")
 
     if (!lastCleanup || now - new Date(lastCleanup) > twentyFourHoursInMs) {
       console.log("Performing 24-hour data cleanup on login...");
-
-      // Dispatch to clear Redux state
-      dispatch({ type: "CLEAR_ALL_IMAGES" });
 
       // Clear user session data
       localStorage.removeItem("auth");
@@ -392,7 +326,7 @@ console.log(showPassword,"showPassword")
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       console.log("API Response:", response.data);
@@ -456,45 +390,6 @@ console.log(showPassword,"showPassword")
       },
     },
   };
-
-  // const handleLogin = async () => {
-  //   if (!email || !password) return;
-
-  //   setLoading(true);
-
-  //   try {
-  //     // Simulate API delay
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //     const response = dummyApiResponse;
-
-  //     console.log("Dummy API Response:", response.data);
-
-  //     // Cleanup
-  //     checkAndPerformCleanup();
-
-  //     // Store session data
-  //     localStorage.setItem(
-  //       "maindata",
-  //       JSON.stringify(response.data.data)
-  //     );
-  //     localStorage.setItem("auth", "true");
-  //     localStorage.setItem("id", Number(email));
-  //     localStorage.setItem("loginType", response.data.loginType);
-
-  //     // Navigation logic (same as real API)
-  //     if (response.data.loginType === 1) {
-  //       navigate("/admin/vendors");
-  //     } else {
-  //       navigate(`/tasks/${email}`);
-  //     }
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     alert("Invalid credentials");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const isAuth = localStorage.getItem("auth");
   const id = localStorage.getItem("StoreID");

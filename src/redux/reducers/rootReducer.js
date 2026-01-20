@@ -1,27 +1,8 @@
-
-// import { combineReducers } from "redux";
-// import authReducer from "./authReducer";
-// import taskReducer from "./taskReducer";
-// import capturedImagesReducer from "./capturedImagesReducer";
-// import queueReducer from "./queueReducer";
-
-// export default combineReducers({
-//   auth: authReducer,
-//   tasks: taskReducer,
-//    capturedImages: capturedImagesReducer,
-//    queue:queueReducer
-// });
-
-
 import { combineReducers } from "redux";
-import authReducer from "./authReducer";
-import taskReducer from "./taskReducer";
-import capturedImagesReducer from "./capturedImagesReducer";
-import queueReducer from "./queueReducer";
+import tasksReducer from "./tasksReducer";
 
-export default combineReducers({
-  auth: authReducer,
-  tasks: taskReducer,
-  capturedImages: capturedImagesReducer,
-  queue: queueReducer
+const rootReducer = combineReducers({
+  tasks: tasksReducer,
 });
+
+export default rootReducer;

@@ -1,3 +1,4 @@
+import React from "react";
 import { toast } from "react-toastify";
 // import DisplayListSection from "../components/DisplayListSection";
 // //   useEffect(() => {
@@ -868,7 +869,6 @@ import { toast } from "react-toastify";
 // //   }
 // // `;
 
-// import { useState, useEffect, useRef } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 // import { useParams, useNavigate } from "react-router-dom";
 // import { useNetworkStatus } from "../components/useNetworkStatus";
@@ -1747,13 +1747,14 @@ import { toast } from "react-toastify";
 // };
 
 import { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { useNetworkStatus } from "../components/useNetworkStatus";
 import axios from "axios";
 import DisplayListSection from "../components/DisplayListSection";
 
 export default function TaskDetail() {
+  // Get params first so they are available for useSelector
   const {
     Store,
     ActivityID,
@@ -1765,6 +1766,17 @@ export default function TaskDetail() {
     Duration,
     DOWork,
   } = useParams();
+  // Get the current task from redux (offline/online) by ScheduleID (ID) and StoreID
+  const task = useSelector((state) =>
+    state.tasks.tasks.find(
+      (t) =>
+        String(t.ID) === String(ScheduleID) &&
+        String(t.StoreID) === String(StoreID),
+    ),
+  );
+
+  console.log(task, "tasksss");
+  const displays = task?.Displays || [];
   console.log(DOWork, "DOWork");
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("during");
@@ -1779,25 +1791,8 @@ export default function TaskDetail() {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
 
-  const dispatch = useDispatch();
   const { isOnline } = useNetworkStatus();
-
-  // Get images for current user and task, using ScheduleID as the unique task key
-  const capturedImages = useSelector((state) => {
-    const userTasks = state.capturedImages.userTasks[StoreID] || {};
-    return userTasks[ScheduleID] || { duringActivity: [], postActivity: [] };
-  });
-
-  const currentImages =
-    activeTab === "during"
-      ? capturedImages.duringActivity
-      : capturedImages.postActivity;
-
-  const DURING_LIMIT = 5;
-  const POST_LIMIT = 20;
-  const currentLimit = activeTab === "during" ? DURING_LIMIT : POST_LIMIT;
-
-  const isLimitReached = currentImages.length >= currentLimit;
+  // TODO: Replace capturedImages logic with local state or context if needed
 
   const startBackCamera = async () => {
     try {
@@ -1861,15 +1856,6 @@ export default function TaskDetail() {
   };
 
   useEffect(() => {
-    // Set current user and task in Redux
-    dispatch({
-      type: "SET_CURRENT_USER_AND_TASK",
-      payload: {
-        userId: StoreID,
-        taskId: ActivityID,
-      },
-    });
-
     if (isCameraOpen) {
       startBackCamera();
     } else {
@@ -1879,16 +1865,20 @@ export default function TaskDetail() {
     return () => {
       stopCamera();
     };
-  }, [isCameraOpen, ActivityID, StoreID, dispatch]);
+  }, [isCameraOpen, ActivityID, StoreID]);
 
+  // Example: Count images using displays array (customize as needed)
   const getTotalImagesCount = () => {
-    return {
-      during: capturedImages.duringActivity.length,
-      post: capturedImages.postActivity.length,
-      total:
-        capturedImages.duringActivity.length +
-        capturedImages.postActivity.length,
-    };
+    if (!displays || displays.length === 0)
+      return { during: 0, post: 0, total: 0 };
+    // Example: count BeforeImageURL and AfterImageURL for each display
+    let during = 0,
+      post = 0;
+    displays.forEach((d) => {
+      if (d.BeforeImageURL) during++;
+      if (d.AfterImageURL) post++;
+    });
+    return { during, post, total: during + post };
   };
 
   const base64ToBlob = (base64) => {
@@ -1916,7 +1906,7 @@ export default function TaskDetail() {
       formData.append("Stage", stage);
       formData.append(
         "DTOImage",
-        new Date().toISOString().replace("T", " ").substring(0, 19)
+        new Date().toISOString().replace("T", " ").substring(0, 19),
       );
       formData.append("UserID", "1");
       formData.append("Image", file);
@@ -1930,14 +1920,14 @@ export default function TaskDetail() {
           },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
+              (progressEvent.loaded * 100) / progressEvent.total,
             );
             setUploadProgress((prev) => ({
               ...prev,
               [imageId]: percentCompleted,
             }));
           },
-        }
+        },
       );
 
       setUploadProgress((prev) => {
@@ -1972,14 +1962,14 @@ export default function TaskDetail() {
 
     if (activeTab === "during" && counts.during >= DURING_LIMIT) {
       alert(
-        `Maximum ${DURING_LIMIT} images allowed for During Activity in this task`
+        `Maximum ${DURING_LIMIT} images allowed for During Activity in this task`,
       );
       return;
     }
 
     if (activeTab === "post" && counts.post >= POST_LIMIT) {
       alert(
-        `Maximum ${POST_LIMIT} images allowed for Post Activity in this task`
+        `Maximum ${POST_LIMIT} images allowed for Post Activity in this task`,
       );
       return;
     }
@@ -2078,7 +2068,7 @@ export default function TaskDetail() {
 
     if (
       window.confirm(
-        `Are you sure you want to clear all ${counts.total} images for this task?`
+        `Are you sure you want to clear all ${counts.total} images for this task?`,
       )
     ) {
       dispatch({
@@ -2117,35 +2107,44 @@ export default function TaskDetail() {
   }
   const counts = getTotalImagesCount();
 
-  // Fetch display list from API
+  // Fetch display list from API or Redux (offline)
   const [displayList, setDisplayList] = useState([]);
   const [loadingDisplayList, setLoadingDisplayList] = useState(false);
 
-  console.log(displayList, "displayList");
-  useEffect(() => {
+  React.useEffect(() => {
+    let didCancel = false;
     const fetchDisplayList = async () => {
       setLoadingDisplayList(true);
       try {
-        const response = await axios.post(
-          "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
-          {
-            StoreID: Number(StoreID),
-            SupplierID: Number(SupplierID),
-            ScheduleID: Number(ScheduleID),
-            DOWork: DOWork,
-          },
-          { headers: { "Content-Type": "application/json" } }
-        );
-        setDisplayList(response.data.data || []);
+        if (isOnline) {
+          const response = await axios.post(
+            "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
+            {
+              StoreID: Number(StoreID),
+              SupplierID: Number(SupplierID),
+              ScheduleID: Number(ScheduleID),
+              DOWork: DOWork,
+            },
+            { headers: { "Content-Type": "application/json" } },
+          );
+          if (!didCancel) setDisplayList(response.data.data || []);
+        } else {
+          // Offline: use Redux state if available
+          if (!didCancel) setDisplayList(displays || []);
+        }
       } catch (error) {
-        setDisplayList([]);
+        // On error, fallback to Redux state if available
+        if (!didCancel) setDisplayList(displays || []);
         console.error("Display list API error:", error);
       } finally {
-        setLoadingDisplayList(false);
+        if (!didCancel) setLoadingDisplayList(false);
       }
     };
     fetchDisplayList();
-  }, [StoreID, SupplierID, ScheduleID, DOWork]);
+    return () => {
+      didCancel = true;
+    };
+  }, [StoreID, SupplierID, ScheduleID, DOWork, isOnline, displays]);
 
   return (
     <div style={styles.container}>
@@ -2272,6 +2271,22 @@ export default function TaskDetail() {
         SupplierID={SupplierID}
         setDisplayList={setDisplayList}
       />
+      {/* Fallback message if no data available */}
+      {!loadingDisplayList && (!displayList || displayList.length === 0) && (
+        <div
+          style={{
+            textAlign: "center",
+            color: "#888",
+            margin: "32px 0",
+            fontWeight: 500,
+            fontSize: 18,
+          }}
+        >
+          {isOnline
+            ? "No data available for this task."
+            : "No offline data available. Please connect to the internet and refresh once."}
+        </div>
+      )}
     </div>
   );
 }

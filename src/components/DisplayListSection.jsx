@@ -405,7 +405,7 @@ const DisplayListSection = ({
       formData.append("Stage", stageFormatted);
       formData.append(
         "DTOImage",
-        new Date().toISOString().replace("T", " ").substring(0, 19)
+        new Date().toISOString().replace("T", " ").substring(0, 19),
       );
       formData.append("UserID", "1");
 
@@ -434,7 +434,7 @@ const DisplayListSection = ({
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       if (!response.ok) throw new Error("Image upload failed");
@@ -460,7 +460,7 @@ const DisplayListSection = ({
                 StoreID: StoreID,
                 SupplierID: SupplierID,
               }),
-            }
+            },
           );
 
           const data = await response.json();
@@ -490,7 +490,7 @@ const DisplayListSection = ({
         });
 
         alert(
-          "Upload failed. Image saved offline and will sync when back online."
+          "Upload failed. Image saved offline and will sync when back online.",
         );
         fetchOfflineImages(); // Refresh offline images list
 
@@ -550,7 +550,7 @@ const DisplayListSection = ({
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       if (!response.ok) throw new Error("Upload failed");
@@ -571,7 +571,7 @@ const DisplayListSection = ({
             StoreID: StoreID,
             SupplierID: SupplierID,
           }),
-        }
+        },
       );
 
       const data = await refreshResponse.json();
@@ -631,7 +631,7 @@ const DisplayListSection = ({
                       StoreID: StoreID,
                       SupplierID: SupplierID,
                     }),
-                  }
+                  },
                 );
 
                 const data = await response.json();

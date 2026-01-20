@@ -1,4 +1,3 @@
-import { useDispatch } from "react-redux";
 import AppRoutes from "./routes/AppRoutes";
 import ToasterProvider from "./ToasterProvider";
 import React, { useEffect } from "react";
@@ -20,7 +19,7 @@ export default function App() {
       }
       // Convert back to local time
       const localNext = new Date(
-        next.getTime() - istOffset - next.getTimezoneOffset() * 60000
+        next.getTime() - istOffset - next.getTimezoneOffset() * 60000,
       );
       return localNext;
     }
@@ -38,7 +37,7 @@ export default function App() {
       }
       // Convert back to local time
       const localLast = new Date(
-        last.getTime() - istOffset - last.getTimezoneOffset() * 60000
+        last.getTime() - istOffset - last.getTimezoneOffset() * 60000,
       );
       return localLast;
     }
@@ -78,10 +77,13 @@ export default function App() {
         await cleanupData();
         localStorage.setItem("lastCleanupIST", new Date().toISOString());
         // After running, set interval for every 24h
-        intervalId = setInterval(async () => {
-          await cleanupData();
-          localStorage.setItem("lastCleanupIST", new Date().toISOString());
-        }, 24 * 60 * 60 * 1000);
+        intervalId = setInterval(
+          async () => {
+            await cleanupData();
+            localStorage.setItem("lastCleanupIST", new Date().toISOString());
+          },
+          24 * 60 * 60 * 1000,
+        );
       }, msUntilNext);
     };
 

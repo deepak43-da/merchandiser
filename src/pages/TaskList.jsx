@@ -1,44 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTasks } from "../redux/actions/tasksActions";
 import React from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import "./taskList.css";
-import { persistor } from "../redux/store";
 import { toast } from "react-toastify";
 
 export default function TaskList() {
   const { id } = useParams();
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const maindata = JSON.parse(localStorage.getItem("maindata")) || [];
+  const tasks = useSelector((state) => state.tasks.tasks);
+  const loading = false; // Optionally wire to a loading state in redux
   useEffect(() => {
     if (id) {
-      fetchTasks();
+      dispatch(fetchTasks(id));
     }
-  }, [id]);
-
-  const fetchTasks = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailySchedule_Get",
-        { StoreID: Number(id) },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      // Use backend keys directly
-      setTasks(response.data.data || []);
-    } catch (error) {
-      console.error("API error:", error);
-      alert("API error");
-      setTasks([]);
-    } finally {
-      setTimeout(() => setLoading(false), 500);
-    }
-  };
+  }, [id, dispatch]);
 
   // ... (previous imports and code remain the same until handleLogout) ...
 
@@ -52,93 +32,6 @@ export default function TaskList() {
     // Navigate to login
     navigate("/");
   };
-
-  // ... (rest of the component remains the same) ...
-
-  // const handleLogout = () => {
-  //   // 1. Dispatch logout action
-  //   // dispatch({ type: "LOGOUT" });
-
-  //   // 2. Clear localStorage completely
-  //   localStorage.clear();
-
-  //   // 3. Clear sessionStorage
-  //   sessionStorage.clear();
-
-  //   // 4. Clear IndexedDB if used
-  //   if (window.indexedDB) {
-  //     window.indexedDB.databases().then((databases) => {
-  //       databases.forEach((db) => {
-  //         if (db.name) {
-  //           window.indexedDB.deleteDatabase(db.name);
-  //         }
-  //       });
-  //     });
-  //   }
-  // localStorage.setItem("maindata", [])
-
-  //   // 5. Clear all cookies
-  //   document.cookie.split(";").forEach((c) => {
-  //     document.cookie = c
-  //       .replace(/^ +/, "")
-  //       .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-  //   });
-
-  //   // 6. Force a full page reload with cache clear
-  //   navigate("/");
-  //   window.location.reload();
-  // };
-
-  // In TaskList.js
-
-  // const handleLogout = () => {
-  //   localStorage.setItem("auth", false);
-  //   localStorage.setItem("id", 0);
-
-  //   // Purge persisted storage
-  //   persistor.purge();
-
-  //   // Optional: Dispatch logout action to reset redux state
-  //   // dispatch({ type: "LOGOUT" });
-
-  //   navigate("/");
-  // };
-
-  // const handleLogout = () => {
-  //   localStorage.setItem("auth", false);
-  //   localStorage.setItem("id", 0);
-  //   // localStorage.removeItem("persist:root");
-  //   navigate("/");
-  // };
-
-  // 🔹 ACTIVE / INACTIVE LOGIC
-  // const isTaskActive = (task) => {
-  //   const now = new Date();
-
-  //   // Date range check
-  //   const startDate = new Date(task.StartDate);
-  //   const endDate = new Date(task.EndDate);
-  //   endDate.setHours(23, 59, 59, 999);
-
-  //   if (now < startDate || now > endDate) return false;
-
-  //   // TimeSlot bucket check
-  //   const hour = now.getHours();
-
-  //   if (task.TimeSlot === "Morning") {
-  //     return hour >= 5 && hour < 12;
-  //   }
-
-  //   if (task.TimeSlot === "Afternoon") {
-  //     return hour >= 12 && hour < 17;
-  //   }
-
-  //   if (task.TimeSlot === "Evening") {
-  //     return hour >= 17 && hour <= 23;
-  //   }
-
-  //   return false;
-  // };
 
   const isTaskActive = (task) => {
     const now = new Date();
@@ -205,7 +98,7 @@ export default function TaskList() {
               border: "none",
               cursor: "pointer",
             }}
-            onClick={fetchTasks}
+            onClick={() => dispatch(fetchTasks(id))}
           >
             Reload
           </button>
@@ -261,17 +154,17 @@ export default function TaskList() {
                   }}
                   key={t.ActivityID}
                   onClick={() => {
-                    if (!active) {
+                    if (active) {
                       const url = `/task/${encodeURIComponent(
-                        t?.Store
+                        t?.Store,
                       )}/${encodeURIComponent(
-                        t.ActivityID
+                        t.ActivityID,
                       )}/${encodeURIComponent(t.StoreID)}/${encodeURIComponent(
-                        t.SupplierID
+                        t.SupplierID,
                       )}/${encodeURIComponent(t.ID)}/${encodeURIComponent(
-                        t.Supplier
+                        t.Supplier,
                       )}/${encodeURIComponent(t.Activity)}/${encodeURIComponent(
-                        t.Duration
+                        t.Duration,
                       )}/${encodeURIComponent(t.DOWork)}`;
                       navigate(url);
                     }

@@ -1,6 +1,7 @@
 import AppRoutes from "./routes/AppRoutes";
 import ToasterProvider from "./ToasterProvider";
 import React, { useEffect } from "react";
+import { store } from "./redux/store";
 
 export default function App() {
   useEffect(() => {
@@ -93,6 +94,24 @@ export default function App() {
       if (intervalId) clearInterval(intervalId);
     };
   }, []);
+
+  // Make store available globally for syncQueue function
+  window.store = store;
+
+  // Initialize offline sync
+  store.dispatch({
+    type: "SET_NETWORK_STATUS",
+    payload: navigator.onLine ? "online" : "offline",
+  });
+
+  // Periodically sync when online
+  setInterval(() => {
+    if (navigator.onLine) {
+      import("./redux/actions/offlineActions").then(({ syncQueue }) => {
+        syncQueue(store.dispatch, () => store.getState());
+      });
+    }
+  }, 30000); // Sync every 30 seconds when online
 
   return (
     <>

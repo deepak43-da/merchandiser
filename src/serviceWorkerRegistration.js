@@ -69,7 +69,6 @@
 //   );
 // });
 
-const CACHE_NAME = "pwa-cache-v1";
 const CLEANUP_KEY = "last_data_cleanup_timestamp";
 
 const APP_SHELL = ["/", "/index.html", "/manifest.json"];
@@ -143,5 +142,62 @@ self.addEventListener("fetch", (event) => {
     caches.match(event.request).then((cached) => {
       return cached || fetch(event.request);
     })
+  );
+});
+
+
+const CACHE_NAME = 'app-cache-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/manifest.json'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(urlsToCache))
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        // Return cached response if found
+        if (response) {
+          return response;
+        }
+        
+        // Clone the request
+        const fetchRequest = event.request.clone();
+        
+        return fetch(fetchRequest).then((response) => {
+          // Check if we received a valid response
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          
+          // Clone the response
+          const responseToCache = response.clone();
+          
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+            
+          return response;
+        }).catch(() => {
+          // For API calls, we don't want to cache failures
+          // Let Redux handle offline data
+          return new Response(
+            JSON.stringify({ error: 'Offline', message: 'Network unavailable' }),
+            {
+              status: 503,
+              headers: { 'Content-Type': 'application/json' }
+            }
+          );
+        });
+      })
   );
 });

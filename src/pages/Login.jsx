@@ -295,23 +295,44 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   console.log(showPassword, "showPassword");
-  const checkAndPerformCleanup = () => {
-    const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
-    const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
-    const now = new Date();
+  // const checkAndPerformCleanup = () => {
+  //   const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
+  //   const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+  //   const now = new Date();
 
-    if (!lastCleanup || now - new Date(lastCleanup) > twentyFourHoursInMs) {
-      console.log("Performing 24-hour data cleanup on login...");
+  //   if (!lastCleanup || now - new Date(lastCleanup) > twentyFourHoursInMs) {
+  //     console.log("Performing 24-hour data cleanup on login...");
 
-      // Clear user session data
-      localStorage.removeItem("auth");
-      localStorage.removeItem("id");
-      localStorage.removeItem("maindata");
+  //     // Clear user session data
+  //     localStorage.removeItem("auth");
+  //     localStorage.removeItem("id");
+  //     localStorage.removeItem("maindata");
 
-      // Update cleanup timestamp
-      localStorage.setItem("last_data_cleanup_timestamp", now.toISOString());
-    }
-  };
+  //     // Update cleanup timestamp
+  //     localStorage.setItem("last_data_cleanup_timestamp", now.toISOString());
+  //   }
+  // };
+
+
+const checkAndPerformCleanup = () => {
+  const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
+  const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+  const now = new Date();
+
+  if (!lastCleanup || now - new Date(lastCleanup) > twentyFourHoursInMs) {
+    console.log("Performing 24-hour data cleanup on login...");
+
+    // Clear user session data but NOT offline data
+    localStorage.removeItem("auth");
+    localStorage.removeItem("id");
+    
+    // DO NOT clear: localStorage.removeItem("maindata");
+    // DO NOT clear: Redux Persist data (managed by persistConfig)
+
+    // Update cleanup timestamp
+    localStorage.setItem("last_data_cleanup_timestamp", now.toISOString());
+  }
+};
 
   const handleLogin = async () => {
     if (!email || !password) return;

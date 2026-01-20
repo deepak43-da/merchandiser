@@ -5,176 +5,121 @@
 //   uploadOfflineImages,
 //   getOfflineImages,
 //   removeOfflineImage,
-// } from "../utils/indexeddb";
+// Helper: check if both before and after images exist (offline or online) for a display
+const hasBothImages = (displayId) => {
+  // Check online (API) images
+  const display = displayList.find((d) => d.DisplayID === displayId);
+  const hasOnlineBefore = display && display.BeforeImageURL;
+  const hasOnlineAfter = display && display.AfterImageURL;
 
-// const DisplayListSection = ({
-//   displayList = [],
-//   loadingDisplayList,
-//   setDisplayList,
-//   StoreID,
-//   SupplierID,
-//   ScheduleID,
-//   DOWork,
-// }) => {
-//   const [loading, setLoading] = useState(false);
-//   const [cameraStep, setCameraStep] = useState(null);
-//   const [showCamera, setShowCamera] = useState(false);
-//   const [capturedImage, setCapturedImage] = useState(null);
-//   const [offlineImages, setOfflineImages] = useState([]);
+  // Check offline images
+  const offlineBefore = offlineImages.find(
+    (img) =>
+      img.displayId === displayId && img.stage?.toLowerCase() === "before",
+  );
+  const offlineAfter = offlineImages.find(
+    (img) =>
+      img.displayId === displayId && img.stage?.toLowerCase() === "after",
+  );
 
-//   useEffect(() => {
-//     fetchOfflineImages();
-//   }, []);
+  // If either online or offline has both
+  return (hasOnlineBefore || offlineBefore) && (hasOnlineAfter || offlineAfter);
+};
 
-//   const fetchOfflineImages = async () => {
-//     const imgs = await getOfflineImages();
-//     setOfflineImages(imgs);
-//   };
-
-//   const handleCapture = (imgData) => {
-//     setCapturedImage(imgData);
-//   };
-
-//   console.log(cameraStep, "cameraStep");
-//   const handleConfirmCapture = async () => {
-//     setLoading(true);
-//     try {
-//       // Upload image logic (replace with your API)
-//       const formData = new FormData();
-//       formData.append("ScheduleID", ScheduleID);
-//       formData.append("DOWork", DOWork);
-//       formData.append("StoreID", StoreID);
-//       formData.append("DisplayID", cameraStep.displayId);
-//       formData.append("Stage", cameraStep.stage);
-//       formData.append(
-//         "DTOImage",
-//         new Date().toISOString().replace("T", " ").substring(0, 19)
-//       );
-//       formData.append("UserID", "1"); // Replace with actual user id if available
-//       // Convert base64 to Blob if needed
-//       let imageFile = capturedImage;
-//       if (
-//         typeof capturedImage === "string" &&
-//         capturedImage.startsWith("data:image")
-//       ) {
-//         const arr = capturedImage.split(",");
-//         const mime = arr[0].match(/:(.*?);/)[1];
-//         const bstr = atob(arr[1]);
-//         let n = bstr.length;
-//         const u8arr = new Uint8Array(n);
-//         while (n--) {
-//           u8arr[n] = bstr.charCodeAt(n);
-//         }
-//         imageFile = new File([u8arr], `image_${Date.now()}.jpg`, {
-//           type: mime,
-//         });
-//       }
-//       formData.append("Image", imageFile);
-//       const response = await fetch(
-//         "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/ScheduleWorkImageUpload",
-//         {
-//           method: "POST",
-//           body: formData,
-//         }
-//       );
-//       if (!response.ok) throw new Error("Image upload failed");
-//       // On success, start after image flow
-//       if (cameraStep.stage === "before") {
-//         setCameraStep({ displayId: cameraStep.displayId, stage: "after" });
-//         setShowCamera(true);
-//         setCapturedImage(null);
-//       } else {
-//         setCameraStep(null);
-//         setCapturedImage(null);
-//         // Refresh display list after uploading 'after' image
-//         try {
-
-//           const response = await fetch(
-//             "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
-//             {
-//               method: "POST",
-//               headers: { "Content-Type": "application/json" },
-//               body: JSON.stringify({
-//                 DOWork: DOWork,
-//                 ScheduleID: ScheduleID,
-//                 StoreID: StoreID,
-//                 SupplierID: SupplierID,
-//               }),
-//             }
-//           );
-//           const data = await response.json();
-//           debugger
-//           if (data && data.data) {
-//             if (typeof setDisplayList === "function") {
-//               setDisplayList(data.data);
-//             }
-//           }
-//         } catch (err) {}
-//       }
-//     } catch (err) {
-//       alert("Image upload failed");
-//       setCameraStep(null);
-//       setCapturedImage(null);
-//     }
-//     setLoading(false);
-//   };
-
-//   return (
-//     <div style={{ padding: 20 }}>
-//       {/* Header with reload button */}
-//       <div
-//         style={{
-//           display: "flex",
-//           justifyContent: "space-between",
-//           alignItems: "center",
-//           marginBottom: 16,
-//         }}
-//       >
-//         <h2 style={{ fontWeight: 700, fontSize: 18 }}>Work List</h2>
-//         {/* <button
-//           style={{
-//             backgroundColor: "#10b981",
-//             color: "white",
-//             padding: "8px 16px",
-//             borderRadius: "8px",
-//             fontWeight: 600,
-//             border: "none",
-//             cursor: "pointer",
-//           }}
-//           onClick={async () => {
-//             if (typeof window.fetchDisplayListFromTaskDetail === "function") {
-//               window.fetchDisplayListFromTaskDetail();
-//             } else {
-//               try {
-//                 debugger;
-//                 console.log(DOWork, ScheduleID, StoreID, SupplierID, "deepak");
-//                 const response = await fetch(
-//                   "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Getss",
-//                   {
-//                     method: "POST",
-//                     headers: { "Content-Type": "application/json" },
-//                     body: JSON.stringify({
-//                       DOWork: DOWork,
-//                       ScheduleID: ScheduleID,
-//                       StoreID: StoreID,
-//                       SupplierID: SupplierID,
-//                     }),
-//                   }
-//                 );
-//                 const data = await response.json();
-//                 if (data && data.data) {
-//                   if (typeof setDisplayList === "function") {
-//                     setDisplayList(data.data);
-//                   }
-//                 }
-//               } catch (err) {}
-//             }
-//           }}
-//         >
-//           Reload
-//         </button> */}
-//       </div>
-
+return (
+  <div style={{ padding: 20 }}>
+    {/* ...existing code... */}
+    {/* Online display list */}
+    {!cameraStep &&
+      (loadingDisplayList ? (
+        <div className="task-card">
+          <span>Loading...</span>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 16,
+            flexDirection: "column",
+            textAlign: "center",
+          }}
+        >
+          {displayList.map((item) => {
+            const disabled = hasBothImages(item.DisplayID);
+            return (
+              <div
+                style={{ display: "flex", justifyContent: "center" }}
+                key={item.ID}
+              >
+                <div
+                  style={{
+                    border: "1px solid #eee",
+                    padding: 8,
+                    width: "min-content",
+                    height: "min-content",
+                    position: "relative",
+                    borderRadius: 12,
+                    background: "#fff",
+                    opacity: disabled ? 0.6 : 1,
+                    cursor: disabled ? "not-allowed" : "pointer",
+                  }}
+                  onClick={() => {
+                    if (disabled) return;
+                    if (item.Completed === "No") {
+                      if (item.BeforeImageURL) {
+                        setCameraStep({
+                          displayId: item.DisplayID,
+                          stage: "after",
+                        });
+                        setShowCamera(true);
+                        setCapturedImage(null);
+                      } else {
+                        setCameraStep({
+                          displayId: item.DisplayID,
+                          stage: "before",
+                        });
+                        setShowCamera(true);
+                        setCapturedImage(null);
+                      }
+                    }
+                  }}
+                >
+                  <img
+                    src={item.ImageURL}
+                    alt="Display"
+                    style={{
+                      width: 200,
+                      height: 200,
+                      objectFit: "cover",
+                      borderRadius: 8,
+                    }}
+                  />
+                  <div style={{ marginTop: 8, fontWeight: 500, fontSize: 14 }}>
+                    Status:{" "}
+                    <span
+                      style={{
+                        color: item.Completed === "No" ? "#eab308" : "#10b981",
+                      }}
+                    >
+                      {item.Completed === "No" ? "Pending" : "Completed"}
+                    </span>
+                  </div>
+                  {disabled && (
+                    <div
+                      style={{ color: "#991b1b", fontSize: 12, marginTop: 6 }}
+                    >
+                      Both images captured
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+  </div>
+);
 //       {/* Show camera step if active */}
 //       {cameraStep ? (
 //         <div

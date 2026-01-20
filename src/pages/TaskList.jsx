@@ -7,11 +7,19 @@ import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import "./taskList.css";
 import { toast } from "react-toastify";
+import { useNetworkStatus } from "../components/useNetworkStatus";
 
 export default function TaskList() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Add this to your TaskList component
+  const { isOnline } = useNetworkStatus();
+  const { queue = [], offlineImages = [] } = useSelector(
+    (state) => state.tasks || {},
+  );
+
   const tasks = useSelector((state) => state.tasks.tasks);
   const loading = false; // Optionally wire to a loading state in redux
   useEffect(() => {
@@ -71,6 +79,33 @@ export default function TaskList() {
   }, [auth]);
 
   const skeletonCount = 5;
+
+  // In your return JSX, add:
+  {
+    !isOnline && (
+      <div
+        style={{
+          backgroundColor: "#fef3c7",
+          border: "1px solid #fde68a",
+          color: "#92400e",
+          padding: "8px 12px",
+          borderRadius: "6px",
+          margin: "10px 16px",
+          fontSize: "14px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <span>📶 You're offline. Data will sync when you reconnect.</span>
+        <span style={{ fontSize: "12px" }}>
+          {queue.length > 0 && `${queue.length} pending sync`}
+          {offlineImages.length > 0 &&
+            ` • ${offlineImages.length} images saved offline`}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="mobile-wrapper fixed-layout">
@@ -154,7 +189,7 @@ export default function TaskList() {
                   }}
                   key={t.ActivityID}
                   onClick={() => {
-                    if (active) {
+                    if (!active) {
                       const url = `/task/${encodeURIComponent(
                         t?.Store,
                       )}/${encodeURIComponent(

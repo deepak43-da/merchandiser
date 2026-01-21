@@ -7,6 +7,8 @@ import Stack from "@mui/material/Stack";
 import "./taskList.css";
 import { persistor } from "../redux/store";
 import { toast } from "react-toastify";
+  import moment from "moment-timezone";
+
 
 export default function TaskList() {
   const { id } = useParams();
@@ -140,32 +142,30 @@ export default function TaskList() {
   //   return false;
   // };
 
-  const isTaskActive = (task) => {
-    const now = new Date();
 
-    // ---- DATE RANGE CHECK ----
-    const startDate = new Date(task.StartDate);
-    const endDate = new Date(task.EndDate);
-    endDate.setHours(23, 59, 59, 999);
+const TZ = "Asia/Riyadh";
 
-    if (now < startDate || now > endDate) return false;
+const isTaskActive = (task) => {
+  const now = moment().tz(TZ);
 
-    // ---- TIME SLOT CHECK ----
-    const currentHour = now.getHours();
+  const start = moment.tz(task.StartDate, TZ);
+  const end = moment.tz(task.EndDate, TZ).endOf("day");
 
-    if (task.TimeSlot === "Evening") {
-      // Evening: 3pm (15:00) to 6pm (18:00)
-      return currentHour >= 15 && currentHour < 18;
-    }
+  if (!now.isBetween(start, end, null, "[]")) return false;
 
-    if (task.TimeSlot === "Night") {
-      // Night: 6pm (18:00) to midnight (0:00)
-      return currentHour >= 18 && currentHour <= 23;
-    }
+  const hour = now.hour();
 
-    // If TimeSlot doesn't match Evening or Night, return false
-    return false;
-  };
+  if (task.TimeSlot === "Evening") {
+    return hour >= 15 && hour < 18;
+  }
+
+  if (task.TimeSlot === "Night") {
+    return hour >= 18 && hour <= 23;
+  }
+
+  return false;
+};
+
 
   const auth = localStorage.getItem("auth");
 
@@ -268,7 +268,7 @@ export default function TaskList() {
                         t.ActivityID
                       )}/${encodeURIComponent(t.StoreID)}/${encodeURIComponent(
                         t.SupplierID
-                      )}/${encodeURIComponent(t.ID)}/${encodeURIComponent(
+                      )}/${encodeURIComponent(t.ScheduleID)}/${encodeURIComponent(
                         t.Supplier
                       )}/${encodeURIComponent(t.Activity)}/${encodeURIComponent(
                         t.Duration

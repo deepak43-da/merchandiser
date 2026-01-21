@@ -1223,36 +1223,8 @@ import { toast } from "react-toastify";
 //   }
 //   const counts = getTotalImagesCount();
 
-//   // Fetch display list from API
-//   const [displayList, setDisplayList] = useState([]);
-//   const [loadingDisplayList, setLoadingDisplayList] = useState(false);
-
-//   console.log(displayList,"displayList")
-//   useEffect(() => {
-//     const fetchDisplayList = async () => {
-//       setLoadingDisplayList(true);
-//       try {
-//         const response = await axios.post(
-//           "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
-//           {
-//             StoreID: Number(StoreID),
-//             SupplierID: Number(SupplierID),
-//             ScheduleID: Number(ScheduleID),
-//             DOWork: DOWork,
-//           },
-//           { headers: { "Content-Type": "application/json" } }
-//         );
-//         debugger
-//         setDisplayList(response.data.data || []);
-//       } catch (error) {
-//         setDisplayList([]);
-//         console.error("Display list API error:", error);
-//       } finally {
-//         setLoadingDisplayList(false);
-//       }
-//     };
-//     fetchDisplayList();
-//   }, [StoreID, SupplierID, ScheduleID, DOWork]);
+// Display list is now included in the tasks data from DailySchedule_Get
+// Use Redux to get the current task and its Displays
 
 //   return (
 //     <div style={styles.container}>
@@ -1776,7 +1748,7 @@ export default function TaskDetail() {
   );
 
   console.log(task, "tasksss");
-  const displays = task?.Displays || [];
+  const displays = task?.displays || [];
   console.log(DOWork, "DOWork");
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("during");
@@ -2005,19 +1977,14 @@ export default function TaskDetail() {
         try {
           await uploadImageToAPI(imageData, stage, imageId);
 
+          // Optimistically update display status in Redux so user can't capture again
           dispatch({
-            type: "ADD_UPLOADED_IMAGE",
+            type: "UPDATE_DISPLAY_STATUS",
             payload: {
-              userId: StoreID,
-              taskId: ScheduleID, // Use ScheduleID for unique task
-              imageData: imageData,
-              tab: activeTab,
-              timestamp: new Date().toISOString(),
-              stage: stage,
               scheduleId: ScheduleID,
-              storeId: StoreID,
-              activityId: ActivityID,
-              DOWork: DOWork,
+              displayId: ActivityID, // Assuming ActivityID is used as displayId here; adjust if needed
+              stage: stage.toLowerCase(),
+              imageUrl: imageData, // Use the local imageData as a placeholder; backend should return the real URL if needed
             },
           });
         } catch (uploadError) {
@@ -2107,44 +2074,18 @@ export default function TaskDetail() {
   }
   const counts = getTotalImagesCount();
 
-  // Fetch display list from API or Redux (offline)
-  const [displayList, setDisplayList] = useState([]);
-  const [loadingDisplayList, setLoadingDisplayList] = useState(false);
+  // Display list is now included in the tasks data from DailySchedule_Get
+  // Find the current task from Redux and get its Displays
+  const tasks = useSelector((state) => state.tasks.tasks);
+  const currentTask = tasks.find(
+    (task) =>
+      String(task.ScheduleID) === String(ScheduleID) &&
+      String(task.StoreID) === String(StoreID),
+  );
+  const displayList = currentTask?.displays || [];
+  const loadingDisplayList = false;
 
-  React.useEffect(() => {
-    let didCancel = false;
-    const fetchDisplayList = async () => {
-      setLoadingDisplayList(true);
-      try {
-        if (isOnline) {
-          const response = await axios.post(
-            "https://tamimi.impulseglobal.net/Report/RamadhanApp/API/Schedules.asmx/DailyScheduleDisplayList_Get",
-            {
-              StoreID: Number(StoreID),
-              SupplierID: Number(SupplierID),
-              ScheduleID: Number(ScheduleID),
-              DOWork: DOWork,
-            },
-            { headers: { "Content-Type": "application/json" } },
-          );
-          if (!didCancel) setDisplayList(response.data.data || []);
-        } else {
-          // Offline: use Redux state if available
-          if (!didCancel) setDisplayList(displays || []);
-        }
-      } catch (error) {
-        // On error, fallback to Redux state if available
-        if (!didCancel) setDisplayList(displays || []);
-        console.error("Display list API error:", error);
-      } finally {
-        if (!didCancel) setLoadingDisplayList(false);
-      }
-    };
-    fetchDisplayList();
-    return () => {
-      didCancel = true;
-    };
-  }, [StoreID, SupplierID, ScheduleID, DOWork, isOnline, displays]);
+  console.log(tasks, "tasks");
 
   return (
     <div style={styles.container}>
@@ -2269,7 +2210,6 @@ export default function TaskDetail() {
         loadingDisplayList={loadingDisplayList}
         DOWork={DOWork}
         SupplierID={SupplierID}
-        setDisplayList={setDisplayList}
       />
       {/* Fallback message if no data available */}
       {!loadingDisplayList && (!displayList || displayList.length === 0) && (

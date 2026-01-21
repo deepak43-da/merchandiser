@@ -279,16 +279,17 @@ import { toast } from "react-toastify";
 //   );navigate
 // }
 
-
-
 import React, { useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Button from "../components/ButtonComponent";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchTasks } from "../redux/actions/tasksActions";
 import axios from "axios";
 
 export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -313,26 +314,25 @@ export default function Login() {
   //   }
   // };
 
+  const checkAndPerformCleanup = () => {
+    const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
+    const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+    const now = new Date();
 
-const checkAndPerformCleanup = () => {
-  const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
-  const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
-  const now = new Date();
+    if (!lastCleanup || now - new Date(lastCleanup) > twentyFourHoursInMs) {
+      console.log("Performing 24-hour data cleanup on login...");
 
-  if (!lastCleanup || now - new Date(lastCleanup) > twentyFourHoursInMs) {
-    console.log("Performing 24-hour data cleanup on login...");
+      // Clear user session data but NOT offline data
+      localStorage.removeItem("auth");
+      localStorage.removeItem("id");
 
-    // Clear user session data but NOT offline data
-    localStorage.removeItem("auth");
-    localStorage.removeItem("id");
-    
-    // DO NOT clear: localStorage.removeItem("maindata");
-    // DO NOT clear: Redux Persist data (managed by persistConfig)
+      // DO NOT clear: localStorage.removeItem("maindata");
+      // DO NOT clear: Redux Persist data (managed by persistConfig)
 
-    // Update cleanup timestamp
-    localStorage.setItem("last_data_cleanup_timestamp", now.toISOString());
-  }
-};
+      // Update cleanup timestamp
+      localStorage.setItem("last_data_cleanup_timestamp", now.toISOString());
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !password) return;
@@ -373,10 +373,13 @@ const checkAndPerformCleanup = () => {
       // Show login success toast
       toast.success("Login successful!");
 
+      // Fetch tasks after login
       // Navigation logic
       if (loginData.Type === "Admin") {
         navigate("/admin/vendors");
       } else {
+      await dispatch(fetchTasks(loginData.StoreID));
+        
         navigate(`/tasks/${loginData.StoreID}`);
       }
     } catch (error) {

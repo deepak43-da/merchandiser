@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTasks } from "../redux/actions/tasksActions";
+// import { fetchTasks } from "../redux/actions/tasksActions";
 import React from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
@@ -22,11 +22,6 @@ export default function TaskList() {
 
   const tasks = useSelector((state) => state.tasks.tasks);
   const loading = false; // Optionally wire to a loading state in redux
-  useEffect(() => {
-    if (id) {
-      dispatch(fetchTasks(id));
-    }
-  }, [id, dispatch]);
 
   // ... (previous imports and code remain the same until handleLogout) ...
 
@@ -133,7 +128,7 @@ export default function TaskList() {
               border: "none",
               cursor: "pointer",
             }}
-            onClick={() => dispatch(fetchTasks(id))}
+            // onClick={() => dispatch(fetchTasks(id))}
           >
             Reload
           </button>
@@ -189,14 +184,14 @@ export default function TaskList() {
                   }}
                   key={t.ActivityID}
                   onClick={() => {
-                    if (!active) {
+                    if (active) {
                       const url = `/task/${encodeURIComponent(
                         t?.Store,
                       )}/${encodeURIComponent(
                         t.ActivityID,
                       )}/${encodeURIComponent(t.StoreID)}/${encodeURIComponent(
                         t.SupplierID,
-                      )}/${encodeURIComponent(t.ID)}/${encodeURIComponent(
+                      )}/${encodeURIComponent(t.ScheduleID)}/${encodeURIComponent(
                         t.Supplier,
                       )}/${encodeURIComponent(t.Activity)}/${encodeURIComponent(
                         t.Duration,
@@ -204,7 +199,7 @@ export default function TaskList() {
                       navigate(url);
                     }
                   }}
-                  // className={`task-card ${active ? "active" : "inactive"}`}
+                  className={`task-card ${active ? "active" : "inactive"}`}
                 >
                   <div className="task-row">
                     <span className="task-title">

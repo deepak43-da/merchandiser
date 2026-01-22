@@ -1,5 +1,4 @@
-import React from "react";
-import { toast } from "react-toastify";
+// Only keep the correct TaskDetail export (the one at line 1793+)
 // import DisplayListSection from "../components/DisplayListSection";
 // //   useEffect(() => {
 // //     dispatch({ type: "SET_CURRENT_TASK", payload: ActivityID });
@@ -413,44 +412,7 @@ import { toast } from "react-toastify";
 // //         )}
 
 // //         {/* Offline Images List */}
-// //         {currentImages.length > 0 && (
-// //           <div style={styles.offlineImagesContainer}>
-// //             {/* <h3 style={styles.offlineImagesTitle}>
-// //               Offline Images ({currentImages.filter(img => !img.uploaded).length} pending upload)
-// //             </h3> */}
-// //             <div style={styles.offlineImagesGrid}>
-// //               {currentImages.map((image, index) => (
-// //                 <div key={index} style={styles.offlineImageWrapper}>
-// //                   <img
-// //                     src={image.data}
-// //                     alt={`Offline ${index + 1}`}
-// //                     style={styles.offlineImage}
-// //                   />
-// //                   <div style={styles.offlineImageInfo}>
-// //                     <span style={styles.imageIndex}>#{index + 1}</span>
-// //                     {image.uploaded && (
-// //                       <span style={styles.uploadedBadge}>✓</span>
-// //                     )}
-// //                     {uploadProgress[`${ActivityID}-${activeTab}-${index}`] && (
-// //                       <div style={styles.uploadProgress}>
-// //                         {uploadProgress[`${ActivityID}-${activeTab}-${index}`]}%
-// //                       </div>
-// //                     )}
-// //                   </div>
-// //                   {!image.uploaded && (
-// //                     <button
-// //                       style={styles.removeImageButton}
-// //                       onClick={() => removeOfflineImage(index)}
-// //                       title="Remove image"
-// //                     >
-// //                       ×
-// //                     </button>
-// //                   )}
-// //                 </div>
-// //               ))}
-// //             </div>
-// //           </div>
-// //         )}
+
 // //       </div>
 
 // //       {/* Bottom Summary */}
@@ -1724,8 +1686,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useNetworkStatus } from "../components/useNetworkStatus";
 import axios from "axios";
 import DisplayListSection from "../components/DisplayListSection";
-
+import { toast } from "react-toastify";
 export default function TaskDetail() {
+  
   // Get params first so they are available for useSelector
   const {
     Store,
@@ -1765,6 +1728,45 @@ export default function TaskDetail() {
 
   const { isOnline } = useNetworkStatus();
   // TODO: Replace capturedImages logic with local state or context if needed
+
+  // --- Images to Show Logic ---
+  // Get offline images from Redux (if available)
+ 
+
+  // For demo: show displays as images when online, offlineImages when offline
+  let imagesToShow = [];
+ 
+  // --- Images to Show Logic ---
+  // Get offline images from Redux (if available)
+  const offlineImages = useSelector(
+    (state) => state.tasks?.offlineImages || [],
+  );
+  // Filter for current task and tab (if offlineImages exist)
+  const currentOfflineImages = offlineImages.filter(
+    (img) =>
+      img.metadata?.taskId === ActivityID && img.metadata?.tab === activeTab,
+  );
+
+  // For demo: show displays as images when online, offlineImages when offline
+  if (isOnline) {
+    // Use displays for online images (customize as needed)
+    imagesToShow = displays
+      .map((d) => {
+        if (activeTab === "during" && d.BeforeImageURL) {
+          return { src: d.BeforeImageURL, uploaded: true };
+        } else if (activeTab === "post" && d.AfterImageURL) {
+          return { src: d.AfterImageURL, uploaded: true };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  } else {
+    // Use offline images
+    imagesToShow = currentOfflineImages?.map((img) => ({
+      src: img.imageData,
+      ...img,
+    }));
+  }
 
   const startBackCamera = async () => {
     try {
@@ -2596,3 +2598,5 @@ const styles = {
     borderRadius: "6px",
   },
 };
+
+// (If needed, export styles or any other required objects here)

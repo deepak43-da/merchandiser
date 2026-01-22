@@ -184,7 +184,7 @@ export default function TaskList() {
                   }}
                   key={t.ActivityID}
                   onClick={() => {
-                    if (active) {
+                    if (true) {
                       const url = `/task/${encodeURIComponent(
                         t?.Store,
                       )}/${encodeURIComponent(
@@ -199,7 +199,7 @@ export default function TaskList() {
                       navigate(url);
                     }
                   }}
-                  className={`task-card ${active ? "active" : "inactive"}`}
+                  // className={`task-card ${active ? "active" : "inactive"}`}
                 >
                   <div className="task-row">
                     <span className="task-title">
@@ -214,9 +214,31 @@ export default function TaskList() {
                     </span>
                   </div>
                   <div className="task-id">Hrs Book: {t.Duration} hrs</div>
+
                   <div className="task-id">
-                    Display Completed: {t?.Completed ?? 0}/
-                    {t?.DisplayCount ?? 0}
+                    {(() => {
+                      // Count displays completed either by backend or by offline images
+                      const displayCount = t.displays?.length || 0;
+                      let completedCount = 0;
+                      if (Array.isArray(t.displays)) {
+                        completedCount = t.displays.filter((d) => {
+                          if (d.Completed === "Yes") return true;
+                          // Check for offline images for both before and after
+                          const beforeImg = offlineImages.find(
+                            (img) =>
+                              img.metadata?.displayId === d.DisplayID &&
+                              img.metadata?.stage?.toLowerCase() === "before",
+                          );
+                          const afterImg = offlineImages.find(
+                            (img) =>
+                              img.metadata?.displayId === d.DisplayID &&
+                              img.metadata?.stage?.toLowerCase() === "after",
+                          );
+                          return beforeImg && afterImg;
+                        }).length;
+                      }
+                      return `Display Completed: ${completedCount}/${displayCount}`;
+                    })()}
                   </div>
 
                   <div className="task-info">

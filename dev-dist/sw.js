@@ -4,7 +4,7 @@ self.addEventListener("message", async (event) => {
     // Clear all caches
     if (self.caches) {
       const cacheNames = await self.caches.keys();
-      await Promise.all(cacheNames.map((name) => self.caches.delete(name)));
+      await Promise.all(cacheNames.map((name) => self.caches.delete(name)));  
     }
     // Optionally, clear IndexedDB (clients should handle their own storage)
     // Respond to client

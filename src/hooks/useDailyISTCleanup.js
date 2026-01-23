@@ -16,19 +16,18 @@ export default function useDailyISTCleanup(store, persistor) {
     }
 
     async function cleanupData() {
-      if (window.indexedDB && window.indexedDB.databases) {
-        const databases = await window.indexedDB.databases();
-        for (const db of databases) {
-          if (db.name) {
-            window.indexedDB.deleteDatabase(db.name);
-          }
-        }
-      }
+      // Clear Redux, localStorage, and localForage
       await persistor.purge();
       store.dispatch({ type: "RESET_STORE" });
       localStorage.removeItem("auth");
       localStorage.removeItem("id");
       localStorage.removeItem("maindata");
+      // Clear localForage (if used)
+      if (window.localforage) {
+        try {
+          await window.localforage.clear();
+        } catch (e) {}
+      }
     }
 
     // On mount, check if IST date has changed since last cleanup
@@ -36,8 +35,27 @@ export default function useDailyISTCleanup(store, persistor) {
       const lastCleanupDate = localStorage.getItem("lastCleanupISTDate");
       const todayIST = getISTDateString();
       if (lastCleanupDate !== todayIST) {
-        await cleanupData();
-        localStorage.setItem("lastCleanupISTDate", todayIST);
+        // Send message to service worker to cleanup caches
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: "CLEANUP_ON_DATE_CHANGE",
+          });
+          // Listen for response from service worker
+          navigator.serviceWorker.addEventListener(
+            "message",
+            async (event) => {
+              if (event.data && event.data.type === "CLEANUP_DONE") {
+                await cleanupData();
+                localStorage.setItem("lastCleanupISTDate", todayIST);
+              }
+            },
+            { once: true },
+          );
+        } else {
+          // Fallback: cleanup directly if no service worker
+          await cleanupData();
+          localStorage.setItem("lastCleanupISTDate", todayIST);
+        }
       }
     })();
 

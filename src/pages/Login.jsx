@@ -287,6 +287,10 @@ import { useDispatch } from "react-redux";
 import { fetchTasks } from "../redux/actions/tasksActions";
 import axios from "axios";
 
+import { persistStore } from "redux-persist";
+
+
+
 export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -296,6 +300,11 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   console.log(showPassword, "showPassword");
+
+const persistor = persistStore(store);
+
+
+persistor.purge();
   // const checkAndPerformCleanup = () => {
   //   const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
   //   const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
@@ -438,11 +447,11 @@ export default function Login() {
         <p style={styles.subtitle}>Please sign in to continue</p>
 
         <div style={styles.formGroup}>
-          <label style={styles.label}>Email Address</label>
+          <label style={styles.label}>Store Name</label>
           <input
             style={styles.input}
             type="email"
-            placeholder="alex@store.com"
+            placeholder="Store Name"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />

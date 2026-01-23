@@ -78,7 +78,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(APP_SHELL);
-    })
+    }),
   );
   self.skipWaiting();
 });
@@ -94,8 +94,8 @@ self.addEventListener("activate", (event) => {
           Promise.all(
             keys
               .filter((key) => key !== CACHE_NAME)
-              .map((key) => caches.delete(key))
-          )
+              .map((key) => caches.delete(key)),
+          ),
         ),
       // Check for cleanup every 5 minutes
       (async () => {
@@ -112,15 +112,13 @@ self.addEventListener("activate", (event) => {
               }
             }
           }
-          // Clear localStorage items
-          localStorage.removeItem("auth");
-          localStorage.removeItem("id");
-          localStorage.removeItem("maindata");
+          // Clear all localStorage items (including persist:root and any user/offline/session data)
+          localStorage.clear();
           // Update cleanup timestamp
           localStorage.setItem(CLEANUP_KEY, now.toISOString());
         }
       })(),
-    ])
+    ]),
   );
   self.clients.claim();
 });
@@ -132,7 +130,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       caches.match("/index.html").then((cached) => {
         return cached || fetch(event.request);
-      })
+      }),
     );
     return;
   }
@@ -141,63 +139,64 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       return cached || fetch(event.request);
-    })
+    }),
   );
 });
 
+const CACHE_NAME = "app-cache-v1";
+const urlsToCache = ["/", "/index.html", "/manifest.json"];
 
-const CACHE_NAME = 'app-cache-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
-];
-
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)),
   );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached response if found
-        if (response) {
-          return response;
-        }
-        
-        // Clone the request
-        const fetchRequest = event.request.clone();
-        
-        return fetch(fetchRequest).then((response) => {
+    caches.match(event.request).then((response) => {
+      // Return cached response if found
+      if (response) {
+        return response;
+      }
+
+      // Clone the request
+      const fetchRequest = event.request.clone();
+
+      return fetch(fetchRequest)
+        .then((response) => {
           // Check if we received a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+          if (
+            !response ||
+            response.status !== 200 ||
+            response.type !== "basic"
+          ) {
             return response;
           }
-          
+
           // Clone the response
           const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-            
+
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+
           return response;
-        }).catch(() => {
+        })
+        .catch(() => {
           // For API calls, we don't want to cache failures
           // Let Redux handle offline data
           return new Response(
-            JSON.stringify({ error: 'Offline', message: 'Network unavailable' }),
+            JSON.stringify({
+              error: "Offline",
+              message: "Network unavailable",
+            }),
             {
               status: 503,
-              headers: { 'Content-Type': 'application/json' }
-            }
+              headers: { "Content-Type": "application/json" },
+            },
           );
         });
-      })
+    }),
   );
 });

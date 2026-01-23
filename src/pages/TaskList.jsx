@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-// import { fetchTasks } from "../redux/actions/tasksActions";
+import { fetchTasks } from "../redux/actions/tasksActions";
 import React from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import "./taskList.css";
 import { toast } from "react-toastify";
 import { useNetworkStatus } from "../components/useNetworkStatus";
+ import moment from "moment-timezone";
+
 
 export default function TaskList() {
   const { id } = useParams();
@@ -36,30 +38,52 @@ export default function TaskList() {
     navigate("/");
   };
 
-  const isTaskActive = (task) => {
-    const now = new Date();
+  // const isTaskActive = (task) => {
+  //   const now = new Date();
 
-    // ---- DATE RANGE CHECK ----
-    const startDate = new Date(task.StartDate);
-    const endDate = new Date(task.EndDate);
-    endDate.setHours(23, 59, 59, 999);
+  //   // ---- DATE RANGE CHECK ----
+  //   const startDate = new Date(task.StartDate);
+  //   const endDate = new Date(task.EndDate);
+  //   endDate.setHours(23, 59, 59, 999);
 
-    if (now < startDate || now > endDate) return false;
+  //   if (now < startDate || now > endDate) return false;
 
-    // ---- TIME SLOT CHECK ----
-    const currentHour = now.getHours();
+  //   // ---- TIME SLOT CHECK ----
+  //   const currentHour = now.getHours();
+
+  //   if (task.TimeSlot === "Evening") {
+  //     // Evening: 3pm (15:00) to 6pm (18:00)
+  //     return currentHour >= 15 && currentHour < 18;
+  //   }
+
+  //   if (task.TimeSlot === "Night") {
+  //     // Night: 6pm (18:00) to midnight (0:00)
+  //     return currentHour >= 18 && currentHour <= 23;
+  //   }
+
+  //   // If TimeSlot doesn't match Evening or Night, return false
+  //   return false;
+  // };
+
+  const TZ = "Asia/Riyadh";
+    const isTaskActive = (task) => {
+    const now = moment().tz(TZ);
+
+    const start = moment.tz(task.StartDate, TZ);
+    const end = moment.tz(task.EndDate, TZ).endOf("day");
+
+    if (!now.isBetween(start, end, null, "[]")) return false;
+
+    const hour = now.hour();
 
     if (task.TimeSlot === "Evening") {
-      // Evening: 3pm (15:00) to 6pm (18:00)
-      return currentHour >= 15 && currentHour < 18;
+      return hour >= 15 && hour < 18;
     }
 
     if (task.TimeSlot === "Night") {
-      // Night: 6pm (18:00) to midnight (0:00)
-      return currentHour >= 18 && currentHour <= 23;
+      return hour >= 18 && hour <= 23;
     }
 
-    // If TimeSlot doesn't match Evening or Night, return false
     return false;
   };
 
@@ -101,6 +125,7 @@ export default function TaskList() {
       </div>
     );
   }
+  console.log(isOnline,"isOnline")
 
   return (
     <div className="mobile-wrapper fixed-layout">
@@ -119,16 +144,21 @@ export default function TaskList() {
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             style={{
-              backgroundColor: "#10b981",
+              backgroundColor: isOnline ? "#10b981" : "#a7a7a7",
               color: "white",
               padding: "10px 18px",
               borderRadius: "20px",
               fontSize: "13px",
               fontWeight: 500,
               border: "none",
-              cursor: "pointer",
+              cursor: isOnline ? "pointer" : "not-allowed",
+              opacity: isOnline ? 1 : 0.6,
             }}
-            // onClick={() => dispatch(fetchTasks(id))}
+            onClick={() =>{ 
+              if(isOnline)    dispatch(fetchTasks(id))
+              
+           }}
+            disabled={!isOnline}
           >
             Reload
           </button>

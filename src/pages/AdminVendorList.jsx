@@ -89,7 +89,7 @@ export default function AdminVendorList() {
         </div>
       </div>
 
-      <div className="scrollable-tasks">
+      <div className="scrollable-tasks" style={{marginBottom:"0px"}}>
         <h3 className="page-title">Vendor List</h3>
         {loading ? (
           Array.from({ length: skeletonCount }).map((_, index) => (
@@ -106,7 +106,7 @@ export default function AdminVendorList() {
           <div
             style={{
               overflowY: "auto",
-              maxHeight: "66vh",
+              maxHeight: "80vh",
               marginBottom: "10px",
               fontWeight: "bold",
             }}

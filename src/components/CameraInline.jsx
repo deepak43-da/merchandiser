@@ -324,9 +324,9 @@ export default function CameraInline({
         justifyContent: "center",
         background: "#fff",
         borderRadius: 16,
-        boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
+        // boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
         padding: 32,
-        width: "100%",
+        // width: "100%",
         maxWidth: 400,
         margin: "0 auto",
       }}

@@ -1792,6 +1792,7 @@ import {
   captureImageWithOfflineSupport,
   syncQueue,
 } from "../redux/actions/offlineActions";
+import { toast } from "react-toastify";
 
 const DisplayListSection = ({
   displayList = [],
@@ -2016,7 +2017,7 @@ const DisplayListSection = ({
       setLoading(true);
       try {
         await dispatch(syncQueue());
-        alert("Sync completed");
+         toast.success("Sync completed");
       } catch (error) {
         alert("Sync failed: " + error.message);
       } finally {
@@ -2026,6 +2027,8 @@ const DisplayListSection = ({
       alert("You are offline. Please connect to the internet to sync.");
     }
   };
+
+  console.log(offlineImages.length , queue.length , "deepak")
 
   return (
     <div style={{ padding: 20 }}>
@@ -2058,7 +2061,8 @@ const DisplayListSection = ({
             </span>
           )}
 
-          {(offlineImages.length > 0 || queue.length > 0) && (
+          {/* {(offlineImages.length > 0 || queue.length > 0) && ( */}
+          {(queue.length > 0) && (
             <button
               style={{
                 backgroundColor:
@@ -2082,6 +2086,36 @@ const DisplayListSection = ({
           )}
         </div>
       </div>
+
+
+  <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
+       
+
+       
+
+          {(queue.length > 0) && (
+           <div style={{
+            padding: "10px",
+    background: "rgb(238 221 192)",
+    width: "100%",
+    textAlign: "center",
+    color: "red",
+    borderRadius: "11px",
+           }}>
+Please make sure to sync offline images by today, otherwise they’ll be lost.
+
+           </div>
+          )}
+        </div>
+    
+
 
       {/* Camera section */}
       {cameraStep && (

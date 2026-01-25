@@ -388,8 +388,7 @@ export default function Login() {
       await dispatch(fetchTasks(loginData.StoreID));
         
 
-      
-        navigate(`/tasks/${loginData.StoreID}`);
+        navigate(`/read/${loginData.StoreID}`);
       }
     } catch (error) {
 
@@ -438,7 +437,7 @@ export default function Login() {
       if (type === "Admin") {
         navigate(`/admin/vendors`);
       } else {
-        navigate(`/tasks/${id}`);
+        navigate(`/read/${id}`);
       }
     }
   }, [isAuth, id, navigate]);
@@ -512,6 +511,11 @@ export default function Login() {
         >
           Login
         </Button>
+
+        <div style={styles.version}>
+  App Version 1.0.0
+</div>
+
       </div>
     </div>
   );

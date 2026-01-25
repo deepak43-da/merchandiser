@@ -301,11 +301,11 @@ export default function CameraInline({
       
       // Create mirrored image for natural preview
       const ctx = canvas.getContext("2d");
-      ctx.save();
-      ctx.translate(canvas.width, 0);
-      ctx.scale(-1, 1);
+      // ctx.save();
+      // ctx.translate(canvas.width, 0);
+      // ctx.scale(-1, 1);
       ctx.drawImage(videoRef.current, 0, 0);
-      ctx.restore();
+      // ctx.restore();
       
       const image = canvas.toDataURL("image/jpeg", 0.8);
       onCapture(image);
@@ -398,7 +398,7 @@ export default function CameraInline({
                 marginBottom: 18,
                 background: "#f3f4f6",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                transform: "scaleX(-1)", // Mirror for natural preview
+                // transform: "scaleX(-1)", // Mirror for natural preview
                 objectFit: "cover",
               }}
             />

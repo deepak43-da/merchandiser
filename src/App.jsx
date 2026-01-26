@@ -1,7 +1,7 @@
 import AppRoutes from "./routes/AppRoutes";
 import ToasterProvider from "./ToasterProvider";
 import React, { useEffect } from "react";
-import { store } from "./redux/store";
+import { store , persistor  } from "./redux/store";
 
 export default function App() {
   useEffect(() => {
@@ -52,6 +52,13 @@ export default function App() {
           }
         }
       }
+
+        // 🔥 Clear redux-persist
+  await persistor.purge();
+
+  // 🔥 Reset redux store
+  store.dispatch({ type: "RESET_STORE" });
+
       localStorage.removeItem("auth");
       localStorage.removeItem("id");
       localStorage.removeItem("maindata");

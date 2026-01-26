@@ -287,7 +287,6 @@ import { useDispatch } from "react-redux";
 import { fetchTasks } from "../redux/actions/tasksActions";
 import axios from "axios";
 
-import { persistStore } from "redux-persist";
 
 
 
@@ -301,10 +300,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   console.log(showPassword, "showPassword");
 
-const persistor = persistStore(store);
 
-
-persistor.purge();
   // const checkAndPerformCleanup = () => {
   //   const lastCleanup = localStorage.getItem("last_data_cleanup_timestamp");
   //   const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
@@ -359,6 +355,8 @@ persistor.purge();
         },
       );
 
+
+
       console.log("API Response:", response.data);
 
       // Check and perform cleanup if needed
@@ -389,9 +387,14 @@ persistor.purge();
       } else {
       await dispatch(fetchTasks(loginData.StoreID));
         
+
+      
         navigate(`/tasks/${loginData.StoreID}`);
       }
     } catch (error) {
+
+
+      
       console.error("Login error:", error);
       alert("Invalid credentials or API error");
     } finally {

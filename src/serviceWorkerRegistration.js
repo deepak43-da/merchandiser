@@ -114,6 +114,8 @@ self.addEventListener("activate", (event) => {
           }
           // Clear all localStorage items (including persist:root and any user/offline/session data)
           localStorage.clear();
+
+
           // Update cleanup timestamp
           localStorage.setItem(CLEANUP_KEY, now.toISOString());
         }

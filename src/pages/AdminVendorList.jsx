@@ -106,7 +106,7 @@ export default function AdminVendorList() {
           <div
             style={{
               overflowY: "auto",
-              maxHeight: "80vh",
+              maxHeight: "70vh",
               marginBottom: "10px",
               fontWeight: "bold",
             }}

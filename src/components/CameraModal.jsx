@@ -65,7 +65,7 @@ export default function CameraModal({
           background: "#fff",
           padding: 32,
           borderRadius: 16,
-          width: 320,
+          // width: 320,
           maxWidth: 280,
           width: "90vw",
           position: "relative",

@@ -1793,6 +1793,7 @@ import {
   syncQueue,
 } from "../redux/actions/offlineActions";
 import { toast } from "react-toastify";
+import { useNetworkStatus } from "./useNetworkStatus";
 
 const DisplayListSection = ({
   displayList = [],
@@ -1803,6 +1804,7 @@ const DisplayListSection = ({
   DOWork,
 }) => {
   const dispatch = useDispatch();
+   const { isOnline } = useNetworkStatus();
   const [cameraStep, setCameraStep] = useState(null);
   const [capturedImage, setCapturedImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -2028,7 +2030,7 @@ const DisplayListSection = ({
     }
   };
 
-  console.log(offlineImages.length , queue.length , "deepak")
+  console.log(isOnline ,offlineImages.length , queue.length , "deepak")
 
   return (
     <div style={{ padding: 20 }}>
@@ -2098,9 +2100,7 @@ const DisplayListSection = ({
       >
        
 
-       
-
-          {(queue.length > 0) && (
+          {(queue.length > 0  && isOnline === false) && (
            <div style={{
             padding: "10px",
     background: "rgb(238 221 192)",

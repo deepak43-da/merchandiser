@@ -8,7 +8,7 @@ import Stack from "@mui/material/Stack";
 import "./taskList.css";
 import { toast } from "react-toastify";
 import { useNetworkStatus } from "../components/useNetworkStatus";
- import moment from "moment-timezone";
+import moment from "moment-timezone";
 import { store, persistor } from "../redux/store";
 import useDailyISTCleanup from "../hooks/useDailyISTCleanup";
 
@@ -67,12 +67,14 @@ export default function TaskList() {
   //   return false;
   // };
 
-  const TZ = "Asia/Riyadh";
-    const isTaskActive = (task) => {
+  const TZ = "Asia/Kolkata";
+
+  const isTaskActive = (task) => {
     const now = moment().tz(TZ);
 
-    const start = moment.tz(task.StartDate, TZ);
-    const end = moment.tz(task.EndDate, TZ).endOf("day");
+    // If dates come from backend, assume UTC (best practice)
+    const start = moment.utc(task.StartDate).tz(TZ);
+    const end = moment.utc(task.EndDate).tz(TZ).endOf("day");
 
     if (!now.isBetween(start, end, null, "[]")) return false;
 
@@ -127,7 +129,8 @@ export default function TaskList() {
       </div>
     );
   }
-  console.log(isOnline,"isOnline")
+  const data = localStorage.getItem("persist:root");
+  console.log(data, "isOnline");
 
   return (
     <div className="mobile-wrapper fixed-layout">
@@ -156,10 +159,9 @@ export default function TaskList() {
               cursor: isOnline ? "pointer" : "not-allowed",
               opacity: isOnline ? 1 : 0.6,
             }}
-            onClick={() =>{ 
-              if(isOnline)    dispatch(fetchTasks(id))
-              
-           }}
+            onClick={() => {
+              if (isOnline) dispatch(fetchTasks(id));
+            }}
             disabled={!isOnline}
           >
             Reload
@@ -256,14 +258,23 @@ export default function TaskList() {
                         completedCount = t.displays.filter((d) => {
                           if (d.Completed === "Yes") return true;
                           // Check for offline images for both before and after
+                          console.log(
+                            displayCount,
+                            offlineImages,
+                            "offlineImages",
+                          );
                           const beforeImg = offlineImages.find(
                             (img) =>
                               img.metadata?.displayId === d.DisplayID &&
+                              img.metadata?.scheduleId ===
+                                String(d.ScheduleID) &&
                               img.metadata?.stage?.toLowerCase() === "before",
                           );
                           const afterImg = offlineImages.find(
                             (img) =>
                               img.metadata?.displayId === d.DisplayID &&
+                              img.metadata?.scheduleId ===
+                                String(d.ScheduleID) &&
                               img.metadata?.stage?.toLowerCase() === "after",
                           );
                           return beforeImg && afterImg;

@@ -1925,7 +1925,6 @@ export default function TaskDetail() {
   };
 
   const auth = localStorage.getItem("auth");
-
   useEffect(() => {
     if (auth !== "true") {
       localStorage.removeItem("auth");
@@ -2087,10 +2086,10 @@ export default function TaskDetail() {
       String(task.ScheduleID) === String(ScheduleID) &&
       String(task.StoreID) === String(StoreID),
   );
+  
   const displayList = currentTask?.displays || [];
   const loadingDisplayList = false;
 
-  console.log(tasks, "tasks");
 
   return (
     <div style={styles.container}>

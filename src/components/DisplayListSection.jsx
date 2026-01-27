@@ -1879,11 +1879,13 @@ const DisplayListSection = ({
     const offlineBefore = offlineImages.find(
       (img) =>
         img.metadata?.displayId === displayId &&
+        img.metadata?.scheduleId === ScheduleID &&
         img.metadata?.stage?.toLowerCase() === "before",
     );
     const offlineAfter = offlineImages.find(
       (img) =>
         img.metadata?.displayId === displayId &&
+        img.metadata?.scheduleId === ScheduleID &&
         img.metadata?.stage?.toLowerCase() === "after",
     );
 
@@ -1892,12 +1894,14 @@ const DisplayListSection = ({
       (item) =>
         item.type === "IMAGE_UPLOAD" &&
         item.data?.metadata?.displayId === displayId &&
+          img.metadata?.scheduleId === ScheduleID &&
         item.data?.metadata?.stage?.toLowerCase() === "before",
     );
     const queueAfter = queue.some(
       (item) =>
         item.type === "IMAGE_UPLOAD" &&
         item.data?.metadata?.displayId === displayId &&
+          img.metadata?.scheduleId === ScheduleID &&
         item.data?.metadata?.stage?.toLowerCase() === "after",
     );
 
@@ -1910,18 +1914,19 @@ const DisplayListSection = ({
   // Helper to get current image state for a display
   const getDisplayImageState = (displayId) => {
     const display = displayList.find((d) => d.DisplayID === displayId);
-
     const hasBefore =
       (display && display.BeforeImageURL) ||
       offlineImages.some(
         (img) =>
           img.metadata?.displayId === displayId &&
+          img.metadata?.scheduleId === ScheduleID &&
           img.metadata?.stage?.toLowerCase() === "before",
       ) ||
       queue.some(
         (item) =>
           item.type === "IMAGE_UPLOAD" &&
           item.data?.metadata?.displayId === displayId &&
+             img.metadata?.scheduleId === ScheduleID &&
           item.data?.metadata?.stage?.toLowerCase() === "before",
       );
 
@@ -1930,12 +1935,14 @@ const DisplayListSection = ({
       offlineImages.some(
         (img) =>
           img.metadata?.displayId === displayId &&
+           img.metadata?.scheduleId === ScheduleID &&
           img.metadata?.stage?.toLowerCase() === "after",
       ) ||
       queue.some(
         (item) =>
           item.type === "IMAGE_UPLOAD" &&
           item.data?.metadata?.displayId === displayId &&
+             img.metadata?.scheduleId === ScheduleID &&
           item.data?.metadata?.stage?.toLowerCase() === "after",
       );
 
@@ -2033,7 +2040,7 @@ const DisplayListSection = ({
   console.log(isOnline ,offlineImages.length , queue.length , "deepak")
 
   return (
-    <div style={{ padding: 20 }}>
+    <div >
       {/* Header */}
       <div
         style={{
@@ -2122,10 +2129,10 @@ Please make sure to sync offline images by today, otherwise they’ll be lost.
         <div
           style={{
             marginBottom: 24,
-            padding: 20,
+            // padding: 20,
             background: "#f8fafc",
             borderRadius: 12,
-            border: "1px solid #e2e8f0",
+            // border: "1px solid #e2e8f0",
           }}
         >
           <CameraInline

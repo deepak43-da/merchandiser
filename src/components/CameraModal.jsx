@@ -63,11 +63,13 @@ export default function CameraModal({
       <div
         style={{
           background: "#fff",
-          padding: 32,
+          // padding: 32,
           borderRadius: 16,
           // width: 320,
-          maxWidth: 280,
+          // maxWidth: 280,
+          padding: "24px 0px",
           width: "90vw",
+          height: "60vh",
           position: "relative",
           boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
           display: "flex",
@@ -80,7 +82,7 @@ export default function CameraModal({
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "space-around",
             marginBottom: 16,
             width: "100%",
           }}
@@ -129,7 +131,7 @@ export default function CameraModal({
               style={{
                 width: "100%",
 
-                height: 220,
+                height: "70%",
                 borderRadius: 10,
                 background: "#f3f4f6",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
@@ -172,8 +174,11 @@ export default function CameraModal({
               src={capturedImage}
               alt="Captured"
               style={{
-                width: 164,
-                height: 220,
+                // width: 164,
+                // height: 220,
+                 width: "100%",
+
+                height: "70%",
                 borderRadius: 10,
                 background: "#f3f4f6",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.06)",

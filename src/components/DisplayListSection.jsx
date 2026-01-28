@@ -1926,7 +1926,7 @@ const DisplayListSection = ({
         (item) =>
           item.type === "IMAGE_UPLOAD" &&
           item.data?.metadata?.displayId === displayId &&
-             img.metadata?.scheduleId === ScheduleID &&
+             item.metadata?.scheduleId === ScheduleID &&
           item.data?.metadata?.stage?.toLowerCase() === "before",
       );
 
@@ -1942,7 +1942,7 @@ const DisplayListSection = ({
         (item) =>
           item.type === "IMAGE_UPLOAD" &&
           item.data?.metadata?.displayId === displayId &&
-             img.metadata?.scheduleId === ScheduleID &&
+             item.metadata?.scheduleId === ScheduleID &&
           item.data?.metadata?.stage?.toLowerCase() === "after",
       );
 

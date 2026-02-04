@@ -11,6 +11,7 @@ import { useNetworkStatus } from "../components/useNetworkStatus";
 import moment from "moment-timezone";
 import { store, persistor } from "../redux/store";
 import useDailyISTCleanup from "../hooks/useDailyISTCleanup";
+import Version from "../components/Version";
 
 export default function TaskList() {
   const { id } = useParams();
@@ -67,7 +68,7 @@ export default function TaskList() {
   //   return false;
   // };
 
-  const TZ = "Asia/Kolkata";
+  const TZ = "Asia/Riyadh";
 
   const isTaskActive = (task) => {
     const now = moment().tz(TZ);
@@ -79,13 +80,14 @@ export default function TaskList() {
     if (!now.isBetween(start, end, null, "[]")) return false;
 
     const hour = now.hour();
-
+    const minute = now.minute();
+    debugger
     if (task.TimeSlot === "Evening") {
-      return hour >= 15 && hour < 18;
+      return hour >= 15 && hour < 18; // 3 PM – 6 PM Saudi time
     }
 
     if (task.TimeSlot === "Night") {
-      return hour >= 18 && hour <= 23;
+      return hour >= 18 && hour <= 23; // 6 PM – 11:59 PM Saudi time
     }
 
     return false;
@@ -294,9 +296,17 @@ export default function TaskList() {
         )}
       </div>
 
-      <div className="footer fixed-footer">
+      <div className="footer fixed-footer" style={{height:"44px"}}>
+    
+
+
+
         <div>Evening (3pm till Before 6pm)</div>
         <div>Night (6pm till Before Midnight)</div>
+
+    <Version />
+        <div style={{marginBottom:"10px"}}></div> 
+
       </div>
     </div>
   );

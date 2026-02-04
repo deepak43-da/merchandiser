@@ -1689,6 +1689,7 @@ import DisplayListSection from "../components/DisplayListSection";
 import { toast } from "react-toastify";
 import { store, persistor } from "../redux/store";
 import useDailyISTCleanup from "../hooks/useDailyISTCleanup";
+import Version from "../components/Version";
 
 export default function TaskDetail() {
   
@@ -2215,6 +2216,8 @@ export default function TaskDetail() {
         DOWork={DOWork}
         SupplierID={SupplierID}
       />
+ 
+        {/* <div style={{marginBottom:"10px"}}></div>  */}
       {/* Fallback message if no data available */}
       {!loadingDisplayList && (!displayList || displayList.length === 0) && (
         <div
@@ -2231,7 +2234,21 @@ export default function TaskDetail() {
             : "No offline data available. Please connect to the internet and refresh once."}
         </div>
       )}
+
+  <div className="footer fixed-footer" style={{height:"10px", display:"flex", justifyContent:"center"}}>
+    
+
+
+
+   
+
+    <Version />
+        <div style={{marginBottom:"10px"}}></div> 
+
+      </div>
+      
     </div>
+    
   );
 }
 

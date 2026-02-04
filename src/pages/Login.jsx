@@ -377,6 +377,7 @@ export default function Login() {
       localStorage.setItem("Type", loginData.Type);
       localStorage.setItem("StoreID", loginData.StoreID);
       localStorage.setItem("maindata", JSON.stringify(loginData));
+      sessionStorage.setItem("tasklist-reloaded", "false");
       localStorage.setItem("StoreName", loginData.Store);
       // Show login success toast
       toast.success("Login successful!");

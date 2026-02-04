@@ -1729,7 +1729,7 @@ export default function TaskDetail() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
-
+sessionStorage.setItem("tasklist-reloaded", "false");
   const { isOnline } = useNetworkStatus();
   // TODO: Replace capturedImages logic with local state or context if needed
 

@@ -81,7 +81,7 @@ export default function TaskList() {
 
     const hour = now.hour();
     const minute = now.minute();
-    debugger
+    
     if (task.TimeSlot === "Evening") {
       return hour >= 15 && hour < 18; // 3 PM – 6 PM Saudi time
     }
@@ -94,6 +94,20 @@ export default function TaskList() {
   };
 
   const auth = localStorage.getItem("auth");
+  const     first = localStorage.getItem("first");
+
+
+ useEffect(() => {
+  const hasReloaded = sessionStorage.getItem("tasklist-reloaded");
+  if (hasReloaded === "false") {
+    sessionStorage.setItem("tasklist-reloaded", "true");
+    window.location.reload();
+  }else{
+    if (isOnline) dispatch(fetchTasks(id));
+  }
+}, []);
+
+
 
   useEffect(() => {
     if (auth !== "true") {

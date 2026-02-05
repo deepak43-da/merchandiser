@@ -81,7 +81,7 @@ export default function TaskList() {
 
     const hour = now.hour();
     const minute = now.minute();
-    
+
     if (task.TimeSlot === "Evening") {
       return hour >= 15 && hour < 18; // 3 PM – 6 PM Saudi time
     }
@@ -94,20 +94,17 @@ export default function TaskList() {
   };
 
   const auth = localStorage.getItem("auth");
-  const     first = localStorage.getItem("first");
+  const first = localStorage.getItem("first");
 
-
- useEffect(() => {
-  const hasReloaded = sessionStorage.getItem("tasklist-reloaded");
-  if (hasReloaded === "false") {
-    sessionStorage.setItem("tasklist-reloaded", "true");
-    window.location.reload();
-  }else{
-    if (isOnline) dispatch(fetchTasks(id));
-  }
-}, []);
-
-
+  useEffect(() => {
+    const hasReloaded = sessionStorage.getItem("tasklist-reloaded");
+    if (hasReloaded === "false") {
+      sessionStorage.setItem("tasklist-reloaded", "true");
+      window.location.reload();
+    } else {
+      if (isOnline) dispatch(fetchTasks(id));
+    }
+  }, []);
 
   useEffect(() => {
     if (auth !== "true") {
@@ -310,17 +307,12 @@ export default function TaskList() {
         )}
       </div>
 
-      <div className="footer fixed-footer" style={{height:"44px"}}>
-    
-
-
-
+      <div className="footer fixed-footer" style={{ height: "44px" }}>
         <div>Evening (3pm till Before 6pm)</div>
         <div>Night (6pm till Before Midnight)</div>
 
-    <Version />
-        <div style={{marginBottom:"10px"}}></div> 
-
+        <Version />
+        <div style={{ marginBottom: "10px" }}></div>
       </div>
     </div>
   );

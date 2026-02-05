@@ -30,7 +30,9 @@ export const fetchTasks = (userId) => async (dispatch) => {
       if (activityMap[key]) {
         activityMap[key].displays.push(display);
       }
+
     });
+    debugger
     const finalSchedules = Object.values(activityMap);
     dispatch({ type: "SET_TASKS", payload: finalSchedules });
   } catch (error) {

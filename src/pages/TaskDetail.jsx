@@ -2211,7 +2211,7 @@ sessionStorage.setItem("tasklist-reloaded", "false");
         ActivityID={ActivityID}
         StoreID={StoreID}
         ScheduleID={ScheduleID}
-        displayList={displayList}
+        displayLists={displayList}
         loadingDisplayList={loadingDisplayList}
         DOWork={DOWork}
         SupplierID={SupplierID}

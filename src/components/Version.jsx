@@ -3,7 +3,7 @@ import React from 'react'
 const Version = () => {
   return (
        <div style={styles.version}>
-  App Version 1.0.0
+  App Version 1.0.2
 </div>
   )
 }

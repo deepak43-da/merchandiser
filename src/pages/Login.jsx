@@ -287,6 +287,7 @@ import { useDispatch } from "react-redux";
 import { fetchTasks } from "../redux/actions/tasksActions";
 import axios from "axios";
 import Version from "../components/Version";
+import { persistor, store } from "../redux/store";
 
 
 
@@ -370,7 +371,11 @@ export default function Login() {
         setLoading(false);
         return;
       }
-
+// persistor.purge();
+//  store.dispatch({ type: "RESET_STORE" });
+//       localStorage.removeItem("auth");
+//       localStorage.removeItem("id");
+//       localStorage.removeItem("maindata");
       // Store session data
       localStorage.setItem("auth", "true");
       localStorage.setItem("UserID", loginData.UserID);

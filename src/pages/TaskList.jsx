@@ -37,6 +37,9 @@ export default function TaskList() {
     // Note: We keep 'maindata' to avoid unnecessary API calls
     // localStorage.removeItem('maindata');
     toast.error("Logout successful!");
+
+
+
     // Navigate to login
     navigate("/");
   };
@@ -72,7 +75,10 @@ export default function TaskList() {
 
   const isTaskActive = (task) => {
     const now = moment().tz(TZ);
+//     if(id == 16){
+// return true
 
+//     }
     // If dates come from backend, assume UTC (best practice)
     const start = moment.utc(task.StartDate).tz(TZ);
     const end = moment.utc(task.EndDate).tz(TZ).endOf("day");

@@ -393,9 +393,10 @@ export default function Login() {
         navigate("/admin/vendors");
       } else {
       await dispatch(fetchTasks(loginData.StoreID));
-        
-
+        setTimeout(()=>{
         navigate(`/read/${loginData.StoreID}`);
+
+        },[1000])
       }
     } catch (error) {
 
@@ -408,30 +409,7 @@ export default function Login() {
     }
   };
 
-  const dummyApiResponse = {
-    data: {
-      status: true,
-      loginType: 1, // 1 = Admin, 2 = Merchandiser
-      data: {
-        storeId: 12345,
-        storeName: "Tamimi Central Store",
-        city: "Riyadh",
-        scheduleDate: "2026-01-15",
-        tasks: [
-          {
-            taskId: 101,
-            taskName: "Check Inventory",
-            completed: false,
-          },
-          {
-            taskId: 102,
-            taskName: "Update Price Tags",
-            completed: true,
-          },
-        ],
-      },
-    },
-  };
+ 
 
   const isAuth = localStorage.getItem("auth");
   const id = localStorage.getItem("StoreID");

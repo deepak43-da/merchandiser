@@ -1687,6 +1687,9 @@ import { useNetworkStatus } from "../components/useNetworkStatus";
 import axios from "axios";
 import DisplayListSection from "../components/DisplayListSection";
 import { toast } from "react-toastify";
+import { store, persistor } from "../redux/store";
+import useDailyISTCleanup from "../hooks/useDailyISTCleanup";
+
 export default function TaskDetail() {
   
   // Get params first so they are available for useSelector
@@ -1709,7 +1712,7 @@ export default function TaskDetail() {
         String(t.StoreID) === String(StoreID),
     ),
   );
-
+ useDailyISTCleanup(store, persistor);
   console.log(task, "tasksss");
   const displays = task?.displays || [];
   console.log(DOWork, "DOWork");

@@ -9,12 +9,14 @@ import "./taskList.css";
 import { toast } from "react-toastify";
 import { useNetworkStatus } from "../components/useNetworkStatus";
  import moment from "moment-timezone";
-
+import { store, persistor } from "../redux/store";
+import useDailyISTCleanup from "../hooks/useDailyISTCleanup";
 
 export default function TaskList() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  useDailyISTCleanup(store, persistor);
 
   // Add this to your TaskList component
   const { isOnline } = useNetworkStatus();

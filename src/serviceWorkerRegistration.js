@@ -72,7 +72,7 @@
 const CLEANUP_KEY = "last_data_cleanup_timestamp";
 
 const APP_SHELL = ["/", "/index.html", "/manifest.json"];
-
+// import { store, persistor } from "./redux/store";
 // Install
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -113,8 +113,9 @@ self.addEventListener("activate", (event) => {
             }
           }
           // Clear all localStorage items (including persist:root and any user/offline/session data)
+      //      await persistor.purge();
+      // store.dispatch({ type: "RESET_STORE" });
           localStorage.clear();
-
 
           // Update cleanup timestamp
           localStorage.setItem(CLEANUP_KEY, now.toISOString());
@@ -202,3 +203,5 @@ self.addEventListener("fetch", (event) => {
     }),
   );
 });
+
+
